@@ -1,0 +1,26 @@
+<div class="phead">
+  <div><h1>Audit log</h1><p>Append-only. Nothing here can be edited or deleted, including by you. Retained seven years.</p></div>
+  <div style="display:flex;gap:8px">
+    <select class="inp" style="width:auto" [(ngModel)]="filter" (ngModelChange)="load()">
+      <option value="all">All events</option>
+      <option value="spend">Spend only</option>
+      <option value="access">Access &amp; impersonation</option>
+    </select>
+    <button class="btn" type="button" [disabled]="exporting()" (click)="exportLog()">{{ exporting() ? 'Exporting…' : 'Export' }}</button>
+  </div>
+</div>
+
+<div class="card">
+  @if (loading()) {
+    <app-skeleton [height]="260" />
+  } @else {
+    @for (a of entries(); track a.id) {
+      <div style="display:grid;grid-template-columns:130px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--color-border);font-size:12.5px">
+        <span class="mono" style="font-size:11px;color:var(--color-text-dim)">{{ a.timestamp }}</span>
+        <span><span style="color:var(--color-primary-hover);font-weight:600">{{ a.actor }}</span> <span [innerHTML]="a.descriptionHtml"></span></span>
+      </div>
+    } @empty {
+      <app-empty-state message="No entries of that type in this window." />
+    }
+  }
+</div>

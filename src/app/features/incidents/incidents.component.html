@@ -1,0 +1,17 @@
+<div class="phead">
+  <div>
+    <h1>Incidents</h1>
+    <p>Anything that could touch a client's account standing or their money.</p>
+  </div>
+</div>
+
+@if (loading()) {
+<div class="card" style="margin-bottom:12px"><app-skeleton [height]="90" /></div>
+<div class="card"><app-skeleton [height]="90" /></div>
+} @else {
+@for (incident of incidents(); track incident.id) {
+<app-incident-card [incident]="incident" (dismissed)="dismiss(incident)" />
+} @empty {
+<div class="card"><app-empty-state message="No Incidents Register Yet ." /></div>
+}
+}

@@ -1,0 +1,23 @@
+<app-tenant-toolbar (provisionClicked)="dialog.set({ kind: 'provision' })" />
+
+@if (loading()) {
+  <div class="card"><app-skeleton [height]="220" /></div>
+} @else {
+  <app-tenant-table
+    [tenants]="allTenants()"
+    (impersonate)="dialog.set({ kind: 'impersonate', tenant: $event })"
+    (suspendRequested)="dialog.set({ kind: 'suspend', tenant: $event })"
+  />
+}
+
+@switch (dialog().kind) {
+  @case ('provision') {
+    <app-provision-tenant-dialog (cancelled)="dialog.set({ kind: 'none' })" (provisioned)="onDialogSettled()" />
+  }
+  @case ('impersonate') {
+    <app-impersonate-dialog [tenant]="$any(dialog()).tenant" (cancelled)="dialog.set({ kind: 'none' })" (requested)="onDialogSettled()" />
+  }
+  @case ('suspend') {
+    <app-suspend-tenant-dialog [tenant]="$any(dialog()).tenant" (cancelled)="dialog.set({ kind: 'none' })" (suspended)="onDialogSettled()" />
+  }
+}

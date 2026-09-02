@@ -1,0 +1,24 @@
+@use 'tokens';
+@use 'mixins';
+@use 'utilities';
+@use 'layout';
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  height: 100%;
+}
+
+h1, h2, h3, h4 { @include mixins.heading-font; margin: 0; }
+
+a { color: inherit; }
+
+::selection { background: var(--color-primary-fade); }

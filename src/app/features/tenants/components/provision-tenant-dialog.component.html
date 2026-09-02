@@ -1,0 +1,44 @@
+<app-modal-shell title="Provision tenant" (closed)="cancelled.emit()">
+  <form modal-body [formGroup]="form" novalidate>
+    <div class="field">
+      <label for="businessName">Business name</label>
+      <input id="businessName" class="inp" formControlName="businessName" placeholder="Bhoomi Organics Pvt Ltd" />
+      @if (form.controls.businessName.touched && form.controls.businessName.invalid) {
+        <div class="field-error">Business name is required.</div>
+      }
+    </div>
+
+    <div class="field">
+      <label for="gstNumber">GST number</label>
+      <input id="gstNumber" class="inp mono" formControlName="gstNumber" placeholder="29AABCB1234C1Z5" />
+      @if (form.controls.gstNumber.touched && form.controls.gstNumber.invalid) {
+        <div class="field-error">Enter a valid 15-character GSTIN.</div>
+      }
+    </div>
+
+    <div class="field">
+      <label for="plan">Plan</label>
+      <select id="plan" class="inp" formControlName="plan">
+        @for (plan of plans; track plan) { <option [value]="plan">{{ plan }}</option> }
+      </select>
+    </div>
+
+    <div class="field" style="margin-bottom:0">
+      <label for="ownerEmail">Owner email</label>
+      <input id="ownerEmail" class="inp" type="email" formControlName="ownerEmail" placeholder="owner@company.in" />
+      @if (form.controls.ownerEmail.touched && form.controls.ownerEmail.invalid) {
+        <div class="field-error">Enter a valid email address.</div>
+      }
+    </div>
+
+    <p class="mini" style="margin-top:14px;line-height:1.6;color:var(--color-text-dim);font-size:11.5px">
+      Creates an isolated workspace and sends the onboarding link. Publishing stays locked until the brand brief is approved and accounts are connected.
+    </p>
+  </form>
+  <ng-container modal-footer>
+    <button type="button" class="btn" (click)="cancelled.emit()">Cancel</button>
+    <button type="button" class="btn btn-gold" [disabled]="submitting()" (click)="submit()">
+      {{ submitting() ? 'Provisioning…' : 'Provision' }}
+    </button>
+  </ng-container>
+</app-modal-shell>

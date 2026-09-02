@@ -1,0 +1,78 @@
+.shell {
+  display: grid;
+  grid-template-columns: 236px 1fr;
+  grid-template-rows: 58px 1fr;
+  height: 100vh;
+  grid-template-areas: "brand top" "side main";
+}
+
+.brand {
+  grid-area: brand; display: flex; align-items: center; gap: 10px; padding: 0 18px;
+  border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); background: var(--color-surface);
+}
+.mark {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: linear-gradient(140deg, var(--color-primary-hover), var(--color-primary));
+  display: grid; place-items: center; color: var(--color-primary-contrast);
+  font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 14px; flex: none;
+}
+.brand b { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: -.03em; }
+.brand em {
+  font-style: normal; font-size: 9.5px; font-weight: 700; letter-spacing: .14em; color: var(--color-danger);
+  border: 1px solid rgba(229,100,78,.4); border-radius: 4px; padding: 1px 5px; margin-left: 2px;
+}
+
+.top { grid-area: top; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
+.top .search {
+  background: var(--color-surface-secondary); border: 1px solid var(--color-border); border-radius: 8px;
+  padding: 6px 12px; color: var(--color-text); font: inherit; font-size: 13px; width: 290px;
+}
+.top .search:focus { outline: none; border-color: var(--color-primary); }
+.spacer { flex: 1; }
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--color-surface-tertiary);
+  border: 1px solid var(--color-border-strong); display: grid; place-items: center; font-size: 11.5px;
+  font-weight: 700; color: var(--color-primary-hover); cursor: pointer; border-width: 0;
+}
+.theme-switch { display: flex; gap: 2px; background: var(--color-surface-secondary); border: 1px solid var(--color-border); border-radius: 8px; padding: 2px; }
+.theme-switch button {
+  border: 0; background: none; color: var(--color-text-muted); font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer;
+}
+.theme-switch button.active { background: var(--color-surface-tertiary); color: var(--color-text); }
+.hamburger { display: none; background: none; border: 0; color: var(--color-text); font-size: 18px; cursor: pointer; }
+
+.side { grid-area: side; background: var(--color-surface); border-right: 1px solid var(--color-border); overflow-y: auto; padding: 14px 10px; }
+.navlabel { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text-dim); padding: 14px 10px 7px; }
+.nav {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 8px; border: 0;
+  background: none; color: var(--color-text-muted); font: inherit; font-size: 13.5px; font-weight: 500; cursor: pointer;
+  text-align: left; position: relative; text-decoration: none;
+}
+.nav:hover { background: var(--color-surface-secondary); color: var(--color-text); }
+.nav.on { background: var(--color-surface-tertiary); color: var(--color-text); font-weight: 600; }
+.nav.on::before {
+  content: ""; position: absolute; left: -10px; top: 8px; bottom: 8px; width: 2.5px;
+  border-radius: 0 3px 3px 0; background: var(--color-primary);
+}
+.nav .ic { width: 16px; text-align: center; opacity: .85; font-size: 14px; }
+.badge { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: 9px; background: var(--color-surface-tertiary); color: var(--color-text-muted); }
+.badge.hot { background: var(--color-danger); color: #fff; }
+
+.main { grid-area: main; overflow-y: auto; padding: 26px 30px 60px; }
+.phead { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+.phead h1 { font-size: 24px; font-weight: 700; }
+.phead p { color: var(--color-text-muted); font-size: 13.5px; margin-top: 4px; max-width: 64ch; }
+
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; grid-template-areas: "top" "main"; grid-template-rows: 58px 1fr; }
+  .brand { display: none; }
+  .side {
+    position: fixed; top: 58px; left: 0; bottom: 0; width: 236px; z-index: 80;
+    transform: translateX(-100%); transition: transform .18s ease; box-shadow: 12px 0 30px rgba(0,0,0,.35);
+  }
+  .side.open { transform: translateX(0); }
+  .side-scrim { position: fixed; inset: 0; top: 58px; background: rgba(0,0,0,.4); z-index: 70; }
+  .main { padding: 18px; }
+  .top .search { width: 140px; }
+  .hamburger { display: inline-flex; }
+}

@@ -1,0 +1,27 @@
+<div class="phead">
+  <div><h1>Platform overview</h1><p>Live platform health, revenue, and margin at a glance.</p></div>
+  <button class="btn btn-danger" type="button" (click)="haltDialogOpen.set(true)">⏻ Platform-wide halt</button>
+</div>
+
+<div class="grid grid-5" style="margin-bottom:16px">
+  @if (loading()) {
+    <div class="card"><app-skeleton [height]="60" /></div>
+  } @else if (error()) {
+    <div class="card"><div class="empty-state">{{ error() }}<div style="margin-top:10px"><button class="btn btn-sm" (click)="load()">Retry</button></div></div></div>
+  } @else {
+    <app-kpi-card label="Digital users" [value]="digitalUserCount().toString()" />
+  }
+</div>
+
+@if (summary(); as s) {
+  <app-dashboard-kpi-grid [summary]="s" />
+
+  <div class="grid grid-2">
+    <app-attention-panel [summary]="s" (openIncidents)="goToIncidents()" />
+    <app-margin-by-tenant [entries]="s.marginByTenant" />
+  </div>
+}
+
+@if (haltDialogOpen()) {
+  <app-platform-halt-dialog (cancelled)="haltDialogOpen.set(false)" (halted)="onHalted()" />
+}

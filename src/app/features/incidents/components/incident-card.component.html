@@ -1,0 +1,19 @@
+<div class="card" style="margin-bottom:12px" [style.border-color]="borderColor()">
+  <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start">
+    <div style="flex:1;min-width:260px">
+      @if (incident().severity === 'action_needed') {
+        <app-status-tag label="Action needed" variant="danger" />
+      } @else if (incident().severity === 'watch') {
+        <app-status-tag label="Watch" variant="warn" />
+      } @else {
+        <app-status-tag label="Informational" variant="info" />
+      }
+      <h3 style="font-size:15px;margin:8px 0 6px">{{ incident().title }}</h3>
+      <p style="font-size:13px;color:var(--color-text-muted);line-height:1.6">{{ incident().description }}</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm btn-gold" type="button" (click)="onAction()">{{ incident().actionLabel }}</button>
+      <button class="btn btn-sm" type="button" (click)="dismissed.emit()">Dismiss</button>
+    </div>
+  </div>
+</div>

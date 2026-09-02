@@ -1,0 +1,29 @@
+<div class="phead">
+  <div><h1>Job queue</h1><p>Every publish and every spend change is an idempotent job. A retry can never double-publish.</p></div>
+  <button class="btn" type="button" (click)="confirmRetryAllOpen.set(true)">Retry all failed</button>
+</div>
+
+@if (loading()) {
+  <div class="grid grid-4" style="margin-bottom:16px">
+    @for (i of [1,2,3,4]; track i) { <div class="card"><app-skeleton [height]="60" /></div> }
+  </div>
+  <div class="card"><app-skeleton [height]="180" /></div>
+} @else if (summary(); as s) {
+  <div class="grid grid-4" style="margin-bottom:16px">
+    <app-kpi-card label="Queued" [value]="s.queued.toString()" sub="depth normal" />
+    <app-kpi-card label="Running" [value]="s.running.toString()" sub="mixed render/publish" />
+    <app-kpi-card label="Failed 24h" [value]="s.failed24h.toString()" valueColor="var(--color-danger)" sub="all retryable" />
+    <app-kpi-card label="Median duration" [value]="s.medianDurationSeconds + 's'" sub="excl. video render" />
+  </div>
+  <app-job-table [jobs]="jobs()" (retry)="retry($event)" />
+}
+
+@if (confirmRetryAllOpen()) {
+  <app-confirm-dialog
+    title="Retry all failed jobs?"
+    message="Every failed job will be requeued, reusing its original idempotency key. This cannot double-publish."
+    confirmLabel="Retry all"
+    (confirmed)="retryAllFailed()"
+    (cancelled)="confirmRetryAllOpen.set(false)"
+  />
+}

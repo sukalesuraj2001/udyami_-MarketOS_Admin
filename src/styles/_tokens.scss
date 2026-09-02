@@ -1,0 +1,60 @@
+// =============================================================
+// Design tokens — ported 1:1 from the MarketOS HTML prototype.
+// Dark is the source-of-truth theme; light is a professional
+// equivalent built from the same semantic roles.
+// =============================================================
+
+:root,
+[data-theme='dark'] {
+  --color-background: #080B0F;
+  --color-surface: #0F151C;
+  --color-surface-secondary: #151E27;
+  --color-surface-tertiary: #1C2732;
+  --color-border: #212C38;
+  --color-border-strong: #2D3B4A;
+
+  --color-text: #E6EDF3;
+  --color-text-muted: #8B9AAB;
+  --color-text-dim: #5D6D7E;
+
+  --color-primary: #D4A438;
+  --color-primary-hover: #F0CE7A;
+  --color-primary-fade: rgba(212, 164, 56, 0.12);
+  --color-primary-contrast: #171008;
+
+  --color-success: #3FB27F;
+  --color-danger: #E5644E;
+  --color-warning: #E0A030;
+  --color-info: #5A9BD8;
+  --color-violet: #9B7BD4;
+
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+
+[data-theme='light'] {
+  --color-background: #F4F5F7;
+  --color-surface: #FFFFFF;
+  --color-surface-secondary: #F0F1F4;
+  --color-surface-tertiary: #E7E9ED;
+  --color-border: #DCDFE4;
+  --color-border-strong: #C7CCD3;
+
+  --color-text: #12161C;
+  --color-text-muted: #5B6572;
+  --color-text-dim: #8992A0;
+
+  --color-primary: #A9791F;
+  --color-primary-hover: #8E6516;
+  --color-primary-fade: rgba(169, 121, 31, 0.10);
+  --color-primary-contrast: #FFFFFF;
+
+  --color-success: #1F8F5F;
+  --color-danger: #C93F2A;
+  --color-warning: #B5790F;
+  --color-info: #29699E;
+  --color-violet: #7856B8;
+
+  --radius: 10px;
+  --radius-lg: 14px;
+}

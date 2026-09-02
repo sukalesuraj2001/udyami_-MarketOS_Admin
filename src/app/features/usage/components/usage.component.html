@@ -1,0 +1,45 @@
+<div class="phead">
+  <div><h1>Usage &amp; margin</h1><p>Video generation is 68% of variable cost. Without metering, one heavy tenant eats the margin of five others.</p></div>
+  <button class="btn" type="button" [disabled]="exporting()" (click)="exportUsage()">{{ exporting() ? 'Exporting…' : 'Export August' }}</button>
+</div>
+
+@if (loading()) {
+  <div class="grid grid-4" style="margin-bottom:16px">
+    @for (i of [1,2,3,4]; track i) { <div class="card"><app-skeleton [height]="60" /></div> }
+  </div>
+} @else if (summary(); as s) {
+  <div class="grid grid-4" style="margin-bottom:16px">
+    <app-kpi-card label="Revenue MTD" [value]="s.revenueMtdLabel" sub="subscription + credits" />
+    <app-kpi-card label="Variable cost" [value]="s.variableCostLabel" sub="AI + infra attributed" />
+    <app-kpi-card label="Infrastructure" [value]="s.infrastructureLabel" sub="fixed at this tenant count" />
+    <app-kpi-card label="Gross margin" [value]="s.grossMarginPct + '%'" valueColor="var(--color-success)" [sub]="s.grossMarginLabel" />
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:16px">Where the AI money goes</h3>
+      @for (c of s.costBreakdown; track c.label) {
+        <div style="margin-bottom:13px">
+          <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px">
+            <b>{{ c.label }}</b><span class="mono" style="color:var(--color-text-muted)">{{ c.amountLabel }} · {{ c.percentage }}%</span>
+          </div>
+          <app-progress-bar [percent]="c.percentage" [color]="c.percentage > 50 ? 'var(--color-warning)' : 'var(--color-primary)'" />
+        </div>
+      }
+    </div>
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:16px">Credit balances</h3>
+      @for (c of s.creditBalances; track c.tenantName) {
+        <div style="margin-bottom:13px">
+          <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px">
+            <b>{{ c.tenantName }}</b><span class="mono" style="color:var(--color-text-muted)">{{ c.remainingLabel }}</span>
+          </div>
+          <app-progress-bar [percent]="c.percentageUsed" [color]="creditColor(c)" />
+          @if (c.percentageUsed > 75) {
+            <button class="btn btn-sm" style="margin-top:6px" type="button" (click)="topUp(c.tenantName)">Grant top-up</button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

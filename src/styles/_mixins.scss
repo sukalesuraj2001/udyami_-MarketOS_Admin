@@ -1,0 +1,23 @@
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@mixin card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+@mixin mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+@mixin heading-font {
+  font-family: 'Archivo', sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}

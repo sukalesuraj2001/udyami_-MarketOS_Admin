@@ -1,0 +1,32 @@
+<app-modal-shell [title]="'Impersonate ' + tenant().name" (closed)="cancelled.emit()">
+  <ng-container modal-body>
+    <div class="alert alert-warn">
+      <span>▲</span>
+      <span><b>This needs their consent</b>
+        <span class="alert-sub">They'll get a prompt. Every action you take is logged under your name, not theirs, and the session ends automatically.</span>
+      </span>
+    </div>
+    <form [formGroup]="form" novalidate>
+      <div class="field">
+        <label for="impReason">Why are you doing this?</label>
+        <textarea id="impReason" class="inp" formControlName="reason" placeholder="Debugging failed publish job_8841f2 at their request"></textarea>
+        @if (form.controls.reason.touched && form.controls.reason.invalid) {
+          <div class="field-error">Give a reason of at least 10 characters — this is written to the audit log.</div>
+        }
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label for="sessionMinutes">Session length</label>
+        <select id="sessionMinutes" class="inp" formControlName="sessionMinutes">
+          <option [ngValue]="30">30 minutes</option>
+          <option [ngValue]="60">60 minutes</option>
+        </select>
+      </div>
+    </form>
+  </ng-container>
+  <ng-container modal-footer>
+    <button type="button" class="btn" (click)="cancelled.emit()">Cancel</button>
+    <button type="button" class="btn btn-gold" [disabled]="submitting()" (click)="submit()">
+      {{ submitting() ? 'Requesting…' : 'Request consent' }}
+    </button>
+  </ng-container>
+</app-modal-shell>

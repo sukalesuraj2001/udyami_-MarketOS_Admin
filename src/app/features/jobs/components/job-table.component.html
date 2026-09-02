@@ -1,0 +1,28 @@
+<div class="card card-flush table-scroll">
+  <table class="data-table">
+    <thead><tr><th>Job</th><th>Tenant</th><th>Type</th><th>Attempts</th><th>Error</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      @for (j of jobs(); track j.id) {
+        <tr>
+          <td class="mono" style="font-size:12px;color:var(--color-text-muted)">{{ j.id }}</td>
+          <td>{{ j.tenantName }}</td>
+          <td class="mono" style="font-size:11.5px;color:var(--color-text-muted)">{{ j.type }}</td>
+          <td class="mono">{{ j.attempts }}</td>
+          <td style="max-width:230px;font-size:11.5px;color:var(--color-text-dim)">{{ j.error }}</td>
+          <td>
+            @if (j.status === 'failed') { <app-status-tag label="failed" variant="danger" /> }
+            @else if (j.status === 'running') { <app-status-tag label="running" variant="info" /> }
+            @else { <app-status-tag [label]="j.status" variant="neutral" /> }
+          </td>
+          <td>
+            @if (j.status === 'failed') {
+              <button class="btn btn-sm" type="button" (click)="retry.emit(j)">Retry</button>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="7"><app-empty-state message="No jobs in the queue right now." /></td></tr>
+      }
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,21 @@
+<app-modal-shell [title]="'Suspend ' + tenant().name + '?'" (closed)="cancelled.emit()">
+  <ng-container modal-body>
+    <p style="font-size:13.5px;color:var(--color-text-muted);line-height:1.7">
+      Publishing and spend stop within 60 seconds. Their data is preserved and they can be reactivated at any time.
+    </p>
+    <form [formGroup]="form" novalidate>
+      <div class="field" style="margin-top:16px;margin-bottom:0">
+        <label for="suspendReason">Reason</label>
+        <select id="suspendReason" class="inp" formControlName="reason">
+          @for (r of reasons; track r) { <option [value]="r">{{ r }}</option> }
+        </select>
+      </div>
+    </form>
+  </ng-container>
+  <ng-container modal-footer>
+    <button type="button" class="btn" (click)="cancelled.emit()">Cancel</button>
+    <button type="button" class="btn btn-danger" [disabled]="submitting()" (click)="submit()">
+      {{ submitting() ? 'Suspending…' : 'Suspend tenant' }}
+    </button>
+  </ng-container>
+</app-modal-shell>

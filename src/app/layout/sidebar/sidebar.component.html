@@ -1,0 +1,19 @@
+<nav class="side" [class.open]="open()" aria-label="Primary">
+  @for (group of groups(); track group.label) {
+    <div class="navlabel">{{ group.label }}</div>
+    @for (item of group.items; track item.path) {
+      <a
+        class="nav"
+        [routerLink]="item.path"
+        routerLinkActive="on"
+        (click)="navigated.emit()"
+      >
+        <span class="ic" aria-hidden="true">{{ item.icon }}</span>
+        {{ item.label }}
+        @if (item.badgeCount !== undefined) {
+          <span class="badge" [class.hot]="item.badgeHot">{{ item.badgeCount }}</span>
+        }
+      </a>
+    }
+  }
+</nav>

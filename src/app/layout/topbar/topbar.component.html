@@ -1,0 +1,29 @@
+<div class="top">
+  <button class="hamburger" type="button" (click)="menuToggled.emit()" aria-label="Toggle navigation">☰</button>
+
+  <label class="sr-only" for="global-search">Search tenants, jobs, audit entries</label>
+  <input
+    id="global-search"
+    class="search"
+    placeholder="Search tenants, jobs, audit entries…"
+    [(ngModel)]="searchTerm"
+  />
+
+  <div class="spacer"></div>
+
+  <div class="theme-switch" role="group" aria-label="Theme">
+    @for (opt of themeOptions; track opt.value) {
+      <button type="button" [class.active]="theme.preference() === opt.value" (click)="setTheme(opt.value)">
+        {{ opt.label }}
+      </button>
+    }
+  </div>
+
+  <span class="chip chip-ok">◆ All systems normal</span>
+
+  @if (authStore.user(); as user) {
+    <button class="avatar" type="button" [title]="user.name + ' — sign out'" (click)="logout()">
+      {{ userInitials() }}
+    </button>
+  }
+</div>
