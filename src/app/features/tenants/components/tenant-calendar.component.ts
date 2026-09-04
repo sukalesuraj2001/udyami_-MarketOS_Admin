@@ -69,7 +69,7 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
           } @else {
           <div class="calendar-grid">
             @for (day of calendarDays(); track day.iso) {
-              <button class="calendar-day" [class.muted-day]="!day.isCurrentMonth" [class.today]="day.isToday" [class.has-activity]="hasDayData(day.iso)" type="button">
+              <button class="calendar-day" [class.muted-day]="!day.isCurrentMonth" [class.today]="day.isToday" [class.active-day]="day.isToday" [class.has-activity]="hasDayData(day.iso)" [attr.aria-current]="day.isToday ? 'date' : null" type="button">
                 <span class="day-number">{{ day.date }}</span>
                 @if (eventsFor(day.iso); as events) {
                   @for (item of events; track item.day) {
@@ -210,6 +210,9 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
     .calendar-day.has-activity::after { content:""; position:absolute; right:8px; top:11px; width:5px; height:5px; border-radius:50%; background:var(--color-primary); box-shadow:0 0 0 4px var(--color-primary-fade); animation:date-beacon 2.4s ease-in-out infinite; }
     .day-number { display:grid; place-items:center; width:23px; height:23px; border-radius:50%; font-size:12px; margin-bottom:7px; }
     .calendar-day.today .day-number { background:var(--color-primary); color:var(--color-primary-contrast); font-weight:700; }
+    .calendar-day.active-day { border-color:var(--color-primary); box-shadow:inset 0 0 0 1px var(--color-primary-fade); }
+    .calendar-day.active-day .day-number { position:relative; box-shadow:0 0 0 4px var(--color-primary-fade), 0 0 16px rgba(224,160,48,.45); animation:active-date-pulse 2.2s ease-in-out infinite; }
+    .calendar-day.active-day::before { content:"TODAY"; position:absolute; right:7px; bottom:7px; color:var(--color-primary); font-size:8px; font-weight:800; letter-spacing:.1em; opacity:.85; }
     .muted-day { opacity:.38; }
     .day-event { display:flex; flex-direction:column; gap:2px; overflow:hidden; color:var(--color-text-muted); border-left:3px solid var(--event-accent, var(--color-primary)); border-radius:3px; background:var(--color-surface-tertiary); padding:5px 5px 5px 6px; font-size:9px; line-height:1.25; text-align:left; transition:color .18s ease, transform .18s ease, background .18s ease; }
     .calendar-day:hover .day-event { color:var(--color-text); transform:translateX(2px); }
@@ -282,6 +285,7 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
     @keyframes preview-rise { from { opacity:0; transform:translateY(18px) scale(.97); } to { opacity:1; transform:none; } }
     @media (max-width: 900px) { .calendar-layout { grid-template-columns:1fr; } }
     @keyframes date-beacon { 0%,100% { opacity:.65; transform:scale(.9); } 50% { opacity:1; transform:scale(1.25); } }
+    @keyframes active-date-pulse { 0%,100% { box-shadow:0 0 0 3px var(--color-primary-fade), 0 0 8px rgba(224,160,48,.25); } 50% { box-shadow:0 0 0 6px rgba(224,160,48,.2), 0 0 22px rgba(224,160,48,.58); } }
     @keyframes orbit-drift { 0%,100% { transform:translate(0,0) rotate(0deg) scale(.9); } 24% { transform:translate(-9px,5px) rotate(70deg) scale(1.05); } 52% { transform:translate(5px,10px) rotate(155deg) scale(.82); } 77% { transform:translate(12px,3px) rotate(245deg) scale(1.12); } }
     @keyframes dossier-row-in { from { opacity:0; transform:translateX(-5px); } to { opacity:1; transform:none; } }
     @media (max-width: 900px) { .day-dossier { left:0; top:calc(100% + 8px); transform:translateY(-8px) scale(.94); transform-origin:top left; } .calendar-day:nth-child(7n) .day-dossier, .calendar-day:nth-child(7n-1) .day-dossier { left:0; right:auto; transform:translateY(-8px) scale(.94); transform-origin:top left; } .calendar-day:hover .day-dossier, .calendar-day:focus-visible .day-dossier { transform:translateY(0) scale(1); } }
@@ -328,7 +332,7 @@ export class TenantCalendarComponent {
       const dateYear = dateMonth < 0 ? year - 1 : dateMonth > 11 ? year + 1 : year;
       const normalizedMonth = (dateMonth + 12) % 12;
       const iso = `${dateYear}-${String(normalizedMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-      days.push({ date, iso, isToday: iso === new Date().toISOString().slice(0, 10), isCurrentMonth });
+      days.push({ date, iso, isToday: iso === this.localDateIso(new Date()), isCurrentMonth });
     }
     return days;
   });
@@ -385,6 +389,10 @@ export class TenantCalendarComponent {
 
   shortDate(iso: string): string {
     return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(`${iso}T00:00:00`));
+  }
+
+  private localDateIso(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   }
 
   eventAccent(activity: string): string {
