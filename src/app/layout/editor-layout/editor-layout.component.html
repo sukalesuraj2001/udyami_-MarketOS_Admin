@@ -1,0 +1,16 @@
+<div class="shell">
+  <div class="brand"><div class="mark">J</div><b>MarketOS</b><em>EDITOR</em></div>
+
+  <app-topbar (menuToggled)="toggleMobileNav()" />
+
+  @if (mobileNavOpen()) {
+    <div class="side-scrim" role="button" tabindex="0" aria-label="Close navigation" (click)="closeMobileNav()" (keydown.enter)="closeMobileNav()"></div>
+  }
+  <app-sidebar [groups]="navGroups()" [open]="mobileNavOpen()" (navigated)="closeMobileNav()" />
+
+  <main class="main">
+    <router-outlet />
+  </main>
+</div>
+
+<app-toast-stack />

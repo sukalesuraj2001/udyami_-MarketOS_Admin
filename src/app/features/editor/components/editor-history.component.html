@@ -1,0 +1,347 @@
+<div class="phead">
+  <div>
+    <h1>Completed History</h1>
+    <p>
+      View all marketing tasks completed by you, with the activity,
+      platform, business and product details.
+    </p>
+  </div>
+
+  <input class="inp" style="width:auto;min-width:260px" placeholder="Search business, activity or product…"
+    [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+</div>
+
+
+<div class="card card-flush table-scroll">
+
+  @if (isLoading()) {
+
+  <div style="padding: 30px; text-align: center;">
+    Loading completed tasks...
+  </div>
+
+  } @else {
+
+  <table class="data-table">
+
+    <thead>
+      <tr>
+        <th>Business</th>
+        <th>Activity</th>
+        <th>Platform</th>
+        <th>Content</th>
+        <th>Product</th>
+        <th>Completed On</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      @for (task of completedTasks(); track task.id) {
+
+      <tr>
+
+        <!-- BUSINESS -->
+        <td>
+          <div>
+            <b>
+              {{ task.businessData?.businessName || '—' }}
+            </b>
+
+            @if (task.businessData?.city) {
+            <div style="
+                      font-size: 12px;
+                      opacity: 0.65;
+                      margin-top: 3px;
+                    ">
+              {{ task.businessData.city }},
+              {{ task.businessData.state }}
+            </div>
+            }
+          </div>
+        </td>
+
+
+        <!-- ACTIVITY -->
+        <td>
+          <div>
+            <b>
+              {{ task.aiResponse?.activity?.title || task.activityType || '—' }}
+            </b>
+
+            @if (task.aiResponse?.activity?.day) {
+            <div style="
+                      font-size: 12px;
+                      opacity: 0.65;
+                      margin-top: 3px;
+                    ">
+              Day {{ task.aiResponse.activity.day }}
+            </div>
+            }
+          </div>
+        </td>
+
+
+        <!-- PLATFORM -->
+        <td>
+          <span>
+            {{ task.platform || '—' }}
+          </span>
+        </td>
+
+
+        <!-- CONTENT TYPE -->
+        <td>
+          <span>
+            {{ task.contentType || '—' }}
+          </span>
+        </td>
+
+
+        <!-- PRODUCT -->
+        <td>
+          <div>
+            <b>
+              {{ task.productName || task.productData?.productName || '—' }}
+            </b>
+
+            @if (task.productData?.category) {
+            <div style="
+                      font-size: 12px;
+                      opacity: 0.65;
+                      margin-top: 3px;
+                    ">
+              {{ task.productData.category }}
+            </div>
+            }
+          </div>
+        </td>
+
+
+        <!-- COMPLETED DATE -->
+        <td class="mono" style="font-size: 12px">
+          {{ task.updatedAt ? (task.updatedAt | slice:0:10) : '—' }}
+        </td>
+
+
+        <!-- STATUS -->
+        <td>
+          <app-status-tag label="DONE" [variant]="editorTaskStatusVariant(task.editorStatus)" />
+        </td>
+
+
+        <!-- VIEW -->
+        <td>
+          <button class="btn btn-sm" type="button" (click)="openTaskModal(task)">
+            View
+          </button>
+        </td>
+
+      </tr>
+
+      } @empty {
+
+      <tr>
+        <td colspan="8">
+
+          <app-empty-state message="No completed tasks yet." />
+
+        </td>
+      </tr>
+
+      }
+
+    </tbody>
+
+  </table>
+
+  }
+
+</div>
+
+@if (selectedTask(); as task) {
+
+<div style="
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    " (click)="closeTaskModal()">
+
+  <div class="card" style="
+        width: 100%;
+        max-width: 900px;
+        max-height: 90vh;
+        overflow-y: auto;
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+      " (click)="$event.stopPropagation()">
+
+    <!-- HEADER -->
+
+    <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        ">
+
+      <div>
+        <h2 style="margin: 0;">
+          {{ task.aiResponse?.activity?.title || task.activityType || 'Content Details' }}
+        </h2>
+
+        <div style="font-size: 13px; opacity: 0.65; margin-top: 5px;">
+          {{ task.businessData?.businessName || '—' }}
+        </div>
+      </div>
+
+      <button class="btn btn-sm" type="button" (click)="closeTaskModal()">
+        ✕
+      </button>
+
+    </div>
+
+
+    <!-- VIDEO -->
+
+    @if (task.mediaType === 'video' && task.mediaUrl) {
+
+    <div style="margin-bottom: 24px;">
+
+      <video [src]="task.mediaUrl" controls playsinline preload="metadata" style="
+              width: 100%;
+              max-height: 500px;
+              display: block;
+              border-radius: 10px;
+              background: #000;
+            "></video>
+
+    </div>
+
+    }
+
+
+    <!-- IMAGE -->
+
+    @if (task.mediaType === 'image' && task.mediaUrl) {
+
+    <div style="margin-bottom: 24px;">
+
+      <img [src]="task.mediaUrl" alt="Generated Content" style="
+              width: 100%;
+              max-height: 500px;
+              object-fit: contain;
+              display: block;
+              border-radius: 10px;
+              background: #f5f5f5;
+            " />
+
+    </div>
+
+    }
+
+
+    <!-- CONTENT DETAILS -->
+
+    <div>
+
+      <div style="margin-bottom: 15px;">
+        <b>Business</b>
+        <div>
+          {{ task.businessData?.businessName || '—' }}
+        </div>
+      </div>
+
+
+      <div style="margin-bottom: 15px;">
+        <b>Platform</b>
+        <div>
+          {{ task.platform || '—' }}
+        </div>
+      </div>
+
+
+      <div style="margin-bottom: 15px;">
+        <b>Content Type</b>
+        <div>
+          {{ task.contentType || '—' }}
+        </div>
+      </div>
+
+
+      <div style="margin-bottom: 15px;">
+        <b>Product</b>
+        <div>
+          {{ task.productName || task.productData?.productName || '—' }}
+        </div>
+      </div>
+
+
+      @if (task.mediaUrl) {
+
+      <div style="margin-bottom: 15px;">
+        <b>Media URL</b>
+
+        <div style="
+                margin-top: 5px;
+                word-break: break-all;
+                font-size: 13px;
+                opacity: 0.75;
+              ">
+          {{ task.mediaUrl }}
+        </div>
+      </div>
+
+      }
+
+
+      @if (task.generatedContent) {
+
+      <div style="margin-top: 20px;">
+
+        <b>Generated Content</b>
+
+        <pre style="
+                margin-top: 8px;
+                padding: 15px;
+                background: #f5f5f5;
+                border-radius: 8px;
+                white-space: pre-wrap;
+                word-break: break-word;
+                font-size: 13px;
+              ">{{ task.generatedContent }}</pre>
+
+      </div>
+
+      }
+
+    </div>
+
+
+    <!-- CLOSE -->
+
+    <div style="
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 20px;
+        ">
+
+      <button class="btn" type="button" (click)="closeTaskModal()">
+        Close
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+}

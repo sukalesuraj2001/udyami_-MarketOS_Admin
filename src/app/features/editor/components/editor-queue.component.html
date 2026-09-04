@@ -1,0 +1,207 @@
+<div class="phead">
+  <div>
+    <h1>{{ pageTitle }}</h1>
+    <p>{{ pageSubtitle }}</p>
+  </div>
+</div>
+
+<div class="grid grid-4" style="margin-bottom:16px">
+  <app-kpi-card label="Pending" [value]="pendingCount().toString()" />
+
+  <app-kpi-card label="In progress" [value]="inProgressCount().toString()" />
+
+  <app-kpi-card label="Done" [value]="doneCount().toString()" />
+
+  <app-kpi-card label="Total" [value]="totalCount().toString()" />
+</div>
+
+<div class="card" style="margin-bottom:16px">
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+
+    <!-- Tenant -->
+    <select class="inp" style="width:auto" [ngModel]="tenantFilter()" (ngModelChange)="tenantFilter.set($event)">
+      <option value="all">All tenants</option>
+
+      @for (tenant of tenants(); track tenant) {
+      <option [value]="tenant">
+        {{ tenant }}
+      </option>
+      }
+    </select>
+
+    <!-- Content Type -->
+    <select class="inp" style="width:auto" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)">
+      <option value="all">All types</option>
+      <option value="reel">Reel</option>
+      <option value="video">Video</option>
+      <option value="story">Story</option>
+      <option value="carousel">Carousel</option>
+      <option value="text">Text</option>
+    </select>
+
+    <!-- Status -->
+    <select class="inp" style="width:auto" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+      <option value="active">
+        Pending + In progress
+      </option>
+
+      <option value="all">
+        All statuses
+      </option>
+
+      <option value="pending">
+        Pending
+      </option>
+
+      <option value="in_progress">
+        In progress
+      </option>
+
+      <option value="done">
+        Done
+      </option>
+
+      <!-- <option value="published">
+        Published
+      </option> -->
+    </select>
+
+  </div>
+</div>
+
+
+@if (filteredTasks().length) {
+
+<div class="grid grid-3">
+
+  @for (task of filteredTasks(); track task.id) {
+
+  <div class="card">
+
+    <!-- Header -->
+    <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:8px;
+            margin-bottom:10px;
+          ">
+
+      <div>
+
+        <!-- Business -->
+        <div style="
+                font-size:12px;
+                color:var(--color-text-muted);
+              ">
+          {{ task.businessData?.businessName || 'Business' }}
+        </div>
+
+        <!-- Product -->
+        <div style="
+                font-weight:600;
+                margin-top:4px;
+              ">
+          {{ task.productName || 'General Content' }}
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Tags -->
+    <div style="
+            display:flex;
+            gap:6px;
+            flex-wrap:wrap;
+            margin-bottom:12px;
+          ">
+
+      <app-status-tag [label]="task.contentType || task.activityType" variant="info" />
+
+      <app-status-tag [label]="task.editorStatus" variant="neutral" />
+
+      <app-status-tag [label]="task.platform" variant="neutral" />
+
+    </div>
+
+
+    <!-- Headline -->
+    @if (task.generatedContent) {
+
+    <div style="
+              font-size:14px;
+              font-weight:600;
+              margin-bottom:8px;
+            ">
+      {{
+      getGeneratedData(task.generatedContent)?.headline
+      || 'Generated Content'
+      }}
+    </div>
+
+    }
+
+
+    <!-- Description -->
+    @if (task.generatedContent) {
+
+    <div style="
+              font-size:13px;
+              color:var(--color-text-dim);
+              line-height:1.5;
+              margin-bottom:10px;
+            ">
+      {{
+      getGeneratedData(task.generatedContent)?.description
+      || 'No description available'
+      }}
+    </div>
+
+    }
+
+
+    <!-- Scheduled -->
+    <div style="
+            font-size:12px;
+            color:var(--color-text-dim);
+            margin-bottom:12px;
+          ">
+      Platform: {{ task.platform || 'N/A' }}
+    </div>
+
+
+    <!-- Actions -->
+    <div style="
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+          ">
+
+      <button class="btn btn-sm" type="button" (click)="openTaskModal(task.id)">
+        View Content
+      </button>
+
+    </div>
+
+  </div>
+
+  }
+
+</div>
+
+} @else {
+
+<div class="card">
+  <app-empty-state message="No content matches these filters." />
+</div>
+
+}
+
+
+@if (openTaskId(); as id) {
+
+<app-editor-task-modal [taskId]="id" (closed)="closeTaskModal()" />
+
+}

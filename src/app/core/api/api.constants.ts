@@ -50,4 +50,16 @@ export const API_ENDPOINTS = {
   platform: {
     halt: '/admin/platform/halt',
   },
+  // ==============================
+  // EDITOR
+  // ==============================
+  editor: {
+    getAllContent: '/create-content/getEditorContent',
+
+    updateContentStatus: (contentId: string) =>
+      `/create-content/updateContentStatus/${contentId}`,
+
+    getMyEditedContent: (editorId: string) =>
+      `/create-content/getMyEditedContent/${editorId}`,
+  },
 } as const;

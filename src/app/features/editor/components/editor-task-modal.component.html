@@ -1,0 +1,769 @@
+@if (content(); as c) {
+
+<app-modal-shell [title]="
+      (c.productName || 'Generated Content') +
+      ' — ' +
+      (c.businessData?.businessName || 'Business')
+    " (closed)="close()">
+
+  <div modal-body>
+
+    <!-- ====================================== -->
+    <!-- BUSINESS INFORMATION -->
+    <!-- ====================================== -->
+
+    <div class="field">
+
+      <label>Business Information</label>
+
+      <div style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+            gap:12px;
+            padding:14px;
+            border:1px solid var(--color-border-strong);
+            border-radius:8px;
+            background:var(--color-surface-secondary);
+          ">
+
+        <div>
+          <div style="font-size:11px;color:var(--color-text-muted)">
+            Business Name
+          </div>
+
+          <div style="font-weight:600;margin-top:3px">
+            {{ c.businessData?.businessName || '—' }}
+          </div>
+        </div>
+
+
+        <div>
+          <div style="font-size:11px;color:var(--color-text-muted)">
+            Owner Name
+          </div>
+
+          <div style="margin-top:3px">
+            {{ c.businessData?.ownerName || '—' }}
+          </div>
+        </div>
+
+
+        <div>
+          <div style="font-size:11px;color:var(--color-text-muted)">
+            City
+          </div>
+
+          <div style="margin-top:3px">
+            {{ c.businessData?.city || '—' }}
+          </div>
+        </div>
+
+
+        <div>
+          <div style="font-size:11px;color:var(--color-text-muted)">
+            State
+          </div>
+
+          <div style="margin-top:3px">
+            {{ c.businessData?.state || '—' }}
+          </div>
+        </div>
+
+
+        <div>
+          <div style="font-size:11px;color:var(--color-text-muted)">
+            Business Type
+          </div>
+
+          <div style="margin-top:3px">
+            {{ c.businessData?.businessType || '—' }}
+          </div>
+        </div>
+
+
+        <div>
+          <div style="font-size:11px;color:var(--color-text-muted)">
+            Industry
+          </div>
+
+          <div style="margin-top:3px">
+            {{ c.businessData?.industry || '—' }}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ====================================== -->
+    <!-- PRODUCT INFORMATION -->
+    <!-- ====================================== -->
+
+    @if (c.productData) {
+
+    <div class="field">
+
+      <label>Product Information</label>
+
+      <div style="
+              padding:14px;
+              border:1px solid var(--color-border-strong);
+              border-radius:8px;
+              background:var(--color-surface-secondary);
+            ">
+
+        <div style="
+                display:grid;
+                grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+                gap:12px;
+              ">
+
+          <div>
+            <div style="font-size:11px;color:var(--color-text-muted)">
+              Product Name
+            </div>
+
+            <div style="font-weight:600;margin-top:3px">
+              {{ c.productData?.productName || c.productName || '—' }}
+            </div>
+          </div>
+
+
+          <div>
+            <div style="font-size:11px;color:var(--color-text-muted)">
+              Price
+            </div>
+
+            <div style="margin-top:3px">
+              {{ c.productData?.price || '—' }}
+            </div>
+          </div>
+
+
+          <div>
+            <div style="font-size:11px;color:var(--color-text-muted)">
+              Category
+            </div>
+
+            <div style="margin-top:3px">
+              {{ c.productData?.category || '—' }}
+            </div>
+          </div>
+
+        </div>
+
+
+        @if (c.productData?.description) {
+
+        <div style="margin-top:14px">
+
+          <div style="
+                    font-size:11px;
+                    color:var(--color-text-muted);
+                    margin-bottom:4px;
+                  ">
+            Product Description
+          </div>
+
+          <div style="line-height:1.6">
+            {{ c.productData.description }}
+          </div>
+
+        </div>
+
+        }
+
+      </div>
+
+    </div>
+
+    }
+
+
+    <!-- ====================================== -->
+    <!-- CONTENT INFORMATION -->
+    <!-- ====================================== -->
+
+    <div class="field">
+
+      <label>Content Information</label>
+
+      <div style="
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+          ">
+
+        <span class="badge">
+          Type: {{ c.contentType || c.activityType || '—' }}
+        </span>
+
+        <span class="badge">
+          Platform: {{ c.platform || '—' }}
+        </span>
+
+        <span class="badge">
+          Editor: {{ c.editorStatus || '—' }}
+        </span>
+
+        <span class="badge">
+          Status: {{ c.status || '—' }}
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- ====================================== -->
+    <!-- AI GENERATED CONTENT -->
+    <!-- ====================================== -->
+
+    @if (getGeneratedData(); as generated) {
+
+    <div class="field">
+
+      <label>AI Generated Content</label>
+
+      <div style="
+              border:1px solid var(--color-border-strong);
+              border-radius:8px;
+              padding:14px;
+              background:var(--color-surface-secondary);
+            ">
+
+        <!-- Headline -->
+
+        @if (generated.headline) {
+
+        <div style="margin-bottom:16px">
+
+          <div style="
+                    font-size:11px;
+                    color:var(--color-text-muted);
+                    margin-bottom:5px;
+                  ">
+            Headline
+          </div>
+
+          <div style="
+                    font-size:17px;
+                    font-weight:600;
+                  ">
+            {{ generated.headline }}
+          </div>
+
+        </div>
+
+        }
+
+
+        <!-- Caption -->
+
+        @if (generated.caption) {
+
+        <div style="margin-bottom:16px">
+
+          <div style="
+                    font-size:11px;
+                    color:var(--color-text-muted);
+                    margin-bottom:5px;
+                  ">
+            Caption
+          </div>
+
+          <div style="line-height:1.6">
+            {{ generated.caption }}
+          </div>
+
+        </div>
+
+        }
+
+
+        <!-- Description -->
+
+        @if (generated.description) {
+
+        <div style="margin-bottom:16px">
+
+          <div style="
+                    font-size:11px;
+                    color:var(--color-text-muted);
+                    margin-bottom:5px;
+                  ">
+            Description
+          </div>
+
+          <div style="line-height:1.6">
+            {{ generated.description }}
+          </div>
+
+        </div>
+
+        }
+
+
+        <!-- CTA -->
+
+        @if (generated.callToAction) {
+
+        <div style="margin-bottom:16px">
+
+          <div style="
+                    font-size:11px;
+                    color:var(--color-text-muted);
+                    margin-bottom:5px;
+                  ">
+            Call To Action
+          </div>
+
+          <div style="font-weight:600">
+            {{ generated.callToAction }}
+          </div>
+
+        </div>
+
+        }
+
+
+        <!-- Script -->
+
+        @if (generated.script) {
+
+        <div style="margin-bottom:16px">
+
+          <div style="
+                    font-size:11px;
+                    color:var(--color-text-muted);
+                    margin-bottom:5px;
+                  ">
+            Script
+          </div>
+
+          <div class="mono" style="
+                    white-space:pre-wrap;
+                    border:1px solid var(--color-border-strong);
+                    border-radius:8px;
+                    padding:12px;
+                    font-size:12.5px;
+                    line-height:1.6;
+                  ">
+            {{ generated.script }}
+          </div>
+
+        </div>
+
+        }
+
+
+        <!-- Hashtags -->
+
+        @if (generated.hashtags?.length) {
+
+        <div>
+
+          <div style="
+                    font-size:11px;
+                    color:var(--color-text-muted);
+                    margin-bottom:7px;
+                  ">
+            Hashtags
+          </div>
+
+          <div style="
+                    display:flex;
+                    gap:6px;
+                    flex-wrap:wrap;
+                  ">
+
+            @for (tag of generated.hashtags; track tag) {
+
+            <span class="badge">
+              {{ tag }}
+            </span>
+
+            }
+
+          </div>
+
+        </div>
+
+        }
+
+
+        <!-- Carousel Slides -->
+
+        @if (generated.carouselSlides?.length) {
+
+        <div style="margin-top:16px">
+
+          <div style="
+                    font-size:11px;
+                    color:var(--color-text-muted);
+                    margin-bottom:8px;
+                  ">
+            Carousel Slides
+          </div>
+
+          @for (
+          slide of generated.carouselSlides;
+          track $index
+          ) {
+
+          <div style="
+                      padding:10px;
+                      border:1px solid var(--color-border-strong);
+                      border-radius:7px;
+                      margin-bottom:8px;
+                    ">
+            <strong>
+              Slide {{ $index + 1 }}
+            </strong>
+
+            <div style="margin-top:5px">
+              {{ slide | json }}
+            </div>
+          </div>
+
+          }
+
+        </div>
+
+        }
+
+
+        <!-- Story Frames -->
+
+        @if (generated.storyFrames?.length) {
+
+        <div style="margin-top:16px">
+
+          <div style="
+                    font-size:11px;
+                    color:var(--color-text-muted);
+                    margin-bottom:8px;
+                  ">
+            Story Frames
+          </div>
+
+          @for (
+          frame of generated.storyFrames;
+          track $index
+          ) {
+
+          <div style="
+                      padding:10px;
+                      border:1px solid var(--color-border-strong);
+                      border-radius:7px;
+                      margin-bottom:8px;
+                    ">
+            <strong>
+              Frame {{ $index + 1 }}
+            </strong>
+
+            <div style="margin-top:5px">
+              {{ frame | json }}
+            </div>
+          </div>
+
+          }
+
+        </div>
+
+        }
+
+      </div>
+
+    </div>
+
+    }
+
+
+    <!-- ====================================== -->
+    <!-- AI PROMPT -->
+    <!-- ====================================== -->
+
+    @if (c.prompt) {
+
+    <div class="field">
+
+      <label>AI-generated Prompt</label>
+
+      <div class="mono" style="
+              white-space:pre-wrap;
+              border:1px solid var(--color-border-strong);
+              border-radius:8px;
+              padding:12px;
+              background:var(--color-surface-secondary);
+              font-size:12.5px;
+              line-height:1.6;
+              max-height:300px;
+              overflow-y:auto;
+            ">{{ c.prompt }}</div>
+
+    </div>
+
+    }
+
+
+    <!-- ====================================== -->
+    <!-- AI RESPONSE -->
+    <!-- ====================================== -->
+
+    @if (c.aiResponse) {
+
+    <div class="field">
+
+      <label>AI Response</label>
+
+      <pre class="mono" style="
+              white-space:pre-wrap;
+              word-break:break-word;
+              border:1px solid var(--color-border-strong);
+              border-radius:8px;
+              padding:12px;
+              background:var(--color-surface-secondary);
+              font-size:12px;
+              line-height:1.5;
+              max-height:350px;
+              overflow:auto;
+            ">{{ c.aiResponse | json }}</pre>
+
+    </div>
+
+    }
+
+
+    <!-- ====================================== -->
+    <!-- GENERATED MEDIA -->
+    <!-- ====================================== -->
+
+    @if (c.mediaUrl) {
+
+    <div class="field">
+
+      <label>Generated Media</label>
+
+      @if (c.mediaType?.startsWith('image')) {
+
+      <img [src]="c.mediaUrl" alt="Generated content" style="
+                width:100%;
+                max-height:450px;
+                object-fit:contain;
+                border-radius:8px;
+                border:1px solid var(--color-border-strong);
+              " />
+
+      } @else {
+
+      <a [href]="c.mediaUrl" target="_blank" rel="noopener noreferrer">
+        Open generated media
+      </a>
+
+      }
+
+    </div>
+
+    }
+
+
+    <!-- ====================================== -->
+    <!-- CONTENT METADATA -->
+    <!-- ====================================== -->
+
+    <div class="field">
+
+      <label>Content Details</label>
+
+      <div style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:12px;
+          ">
+
+        <div>
+          <small>Content ID</small>
+          <div>{{ c.id }}</div>
+        </div>
+
+        <div>
+          <small>Activity ID</small>
+          <div>{{ c.activityId || '—' }}</div>
+        </div>
+
+        <div>
+          <small>Activity Type</small>
+          <div>{{ c.activityType || '—' }}</div>
+        </div>
+
+        <div>
+          <small>Content Type</small>
+          <div>{{ c.contentType || '—' }}</div>
+        </div>
+
+        <div>
+          <small>Editor ID</small>
+          <div>{{ c.editorId || 'Not assigned' }}</div>
+        </div>
+
+        <div>
+          <small>Created At</small>
+          <div>{{ c.createdAt | date:'medium' }}</div>
+        </div>
+
+        <div>
+          <small>Updated At</small>
+          <div>{{ c.updatedAt | date:'medium' }}</div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ====================================== -->
+    <!-- EDITOR NOTES -->
+    <!-- ====================================== -->
+
+    <div class="field" style="margin-bottom:0">
+
+      <!-- <label for="editor-task-notes">
+          Editor Notes
+        </label> -->
+
+      @if (readOnly()) {
+
+      <div class="inp" style="
+              min-height:74px;
+              white-space:pre-wrap;
+            ">
+        —
+      </div>
+
+      } @else {
+
+      <!-- <textarea
+            id="editor-task-notes"
+            class="inp"
+            rows="4"
+            placeholder="Notes while working on this…"
+          ></textarea> -->
+
+      }
+
+    </div>
+
+  </div>
+
+
+  <!-- ====================================== -->
+  <!-- FOOTER -->
+  <!-- ====================================== -->
+
+  <div modal-footer>
+
+    @if (!readOnly()) {
+
+    @switch (c.editorStatus) {
+
+    @case ('PENDING') {
+
+    <button class="btn btn-gold" type="button" (click)="startEditing()">
+      Start editing
+    </button>
+
+    }
+
+
+    @case ('IN_PROGRESS') {
+
+    <button class="btn btn-ok" type="button" (click)="markDone()">
+      Mark done
+    </button>
+
+    }
+
+
+    @case ('DONE') {
+
+    <button class="btn btn-sm" type="button" (click)="backToInProgress()">
+      Back to in progress
+    </button>
+
+    <button class="btn btn-gold" type="button" (click)="publish()">
+      Publish / Push video
+    </button>
+
+    }
+
+
+    @default {
+
+    <button class="btn btn-sm" type="button" (click)="close()">
+      Close
+    </button>
+
+    }
+
+    }
+
+    } @else {
+
+    <button class="btn btn-sm" type="button" (click)="close()">
+      Close
+    </button>
+
+    }
+
+  </div>
+
+</app-modal-shell>
+
+@if (showVideoUpload()) {
+<app-modal-shell title="Upload video" (closed)="closeVideoUpload()">
+  <div modal-body>
+    <div class="video-upload-container">
+      <div class="upload-intro">
+        <span class="upload-kicker">PUBLISH ASSET</span>
+        <h3>Select the final video</h3>
+        <p>Choose the approved video you want to push to this content item.</p>
+      </div>
+
+      <div class="video-drop-zone" (drop)="onVideoDrop($event)" (dragover)="onDragOver($event)">
+        <div class="upload-icon" aria-hidden="true">VIDEO</div>
+        <strong>Drop your video here</strong>
+        <span>or</span>
+        <label class="upload-button">
+          Browse files
+          <input type="file" accept="video/*" hidden (change)="onVideoSelected($event)" />
+        </label>
+        <small>MP4, MOV or WebM · Maximum file size 500 MB</small>
+      </div>
+
+      @if (selectedVideo(); as video) {
+      <div class="selected-video">
+        <div class="selected-video-icon" aria-hidden="true">OK</div>
+        <div class="selected-video-details">
+          <strong>{{ video.name }}</strong>
+          <span>{{ (video.size / 1024 / 1024).toFixed(2) }} MB · Ready to publish</span>
+        </div>
+        <button class="modal-close" type="button" aria-label="Remove selected video"
+          (click)="selectedVideo.set(null)">×</button>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-sm" type="button" (click)="closeVideoUpload()">
+      Cancel
+    </button>
+    <button class="btn btn-gold" type="button" [disabled]="!selectedVideo()" (click)="submitVideo()">
+      Submit video
+    </button>
+  </div>
+</app-modal-shell>
+}
+}
