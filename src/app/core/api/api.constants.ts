@@ -32,6 +32,8 @@ export const API_ENDPOINTS = {
   },
   quota: {
     root: '/admin/quota',
+    getAnthropicUsage: '/create-content/getAnthropicUsage',
+    getAllUsersAiTokenUsage: '/create-content/getAllUsersAiTokenUsage',
   },
   usage: {
     root: '/admin/usage',

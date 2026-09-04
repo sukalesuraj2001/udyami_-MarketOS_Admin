@@ -1,29 +1,130 @@
 <div class="phead">
-  <div><h1>API quota</h1><p>Meta meters calls against the app across every tenant. One noisy tenant can throttle all of them — this is where you see it before it happens.</p></div>
+  <div>
+    <h1>API quota</h1>
+
+    <p>
+      Monitor AI token consumption across the platform.
+      Track Anthropic API usage, quota consumption, and
+      individual user token usage to prevent unexpected limits.
+    </p>
+  </div>
 </div>
 
+
 @if (loading()) {
-  <div class="grid grid-3" style="margin-bottom:16px">
-    @for (i of [1,2,3]; track i) { <div class="card"><app-skeleton [height]="60" /></div> }
+
+<div class="grid grid-3" style="margin-bottom:16px">
+  @for (i of [1, 2, 3]; track i) {
+  <div class="card">
+    <app-skeleton [height]="60" />
   </div>
-  <div class="card"><app-skeleton [height]="160" /></div>
-} @else if (summary(); as s) {
-  <div class="grid grid-3" style="margin-bottom:16px">
-    <app-kpi-card label="Meta app quota" [value]="s.metaAppQuotaPct + '%'" valueColor="var(--color-warning)" sub="rolling 24h window" />
-    <app-kpi-card label="Google Ads ops" [value]="s.googleAdsOpsUsed.toLocaleString()" [sub]="'of ' + s.googleAdsOpsLimit.toLocaleString() + ' · Explorer tier'" />
-    <app-kpi-card label="Throttle events" [value]="s.throttleEvents24h.toString()" sub="both auto-recovered" />
+  }
+</div>
+
+<div class="card">
+  <app-skeleton [height]="160" />
+</div>
+
+} @else {
+
+<!-- ANTHROPIC QUOTA -->
+<div class="grid grid-3" style="margin-bottom:16px">
+
+  <app-kpi-card label="ANTHROPIC AI quota" [value]="anthropicQuotaPct() + '%'" valueColor="var(--color-warning)"
+    sub="rolling 24h window" />
+
+</div>
+
+
+<!-- USER AI TOKEN USAGE -->
+<div class="card">
+
+  <h3 style="
+  font-size:15px;
+  margin-bottom:6px;
+">
+    AI token usage by user
+  </h3>
+
+  <p class="mini" style="
+  margin-bottom:16px;
+  color:var(--color-text-dim);
+  font-size:11.5px;
+">
+    Shows each user's AI token consumption against the configured
+    100,000-token quota.
+  </p>
+
+
+  @if (usersLoading()) {
+
+  <app-skeleton [height]="120" />
+
+  } @else if (usersAiTokenUsage().length === 0) {
+
+  <div style="
+          padding:30px;
+          text-align:center;
+          color:var(--color-text-muted);
+          font-size:13px;
+        ">
+    No AI token usage found.
   </div>
 
-  <div class="card">
-    <h3 style="font-size:15px;margin-bottom:6px">Share of Meta quota, by tenant</h3>
-    <p class="mini" style="margin-bottom:16px;color:var(--color-text-dim);font-size:11.5px">Fair-share queuing caps any single tenant at 40% of available headroom.</p>
-    @for (q of s.shareOfQuota; track q.tenantName) {
-      <div style="margin-bottom:13px">
-        <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px">
-          <b>{{ q.tenantName }}</b><span class="mono" style="color:var(--color-text-muted)">{{ q.percentage }}%</span>
-        </div>
-        <app-progress-bar [percent]="q.percentage * 2" [color]="q.percentage > 30 ? 'var(--color-warning)' : 'var(--color-primary)'" />
-      </div>
-    }
+  } @else {
+
+  @for (
+  usage of usersAiTokenUsage();
+  track usage.userId
+  ) {
+
+  <div style="
+            margin-bottom:16px;
+          ">
+
+    <!-- USER INFO -->
+    <div style="
+              display:flex;
+              justify-content:space-between;
+              align-items:center;
+              gap:12px;
+              font-size:12.5px;
+              margin-bottom:6px;
+            ">
+
+      <b style="
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  ">
+        {{ getBusinessName(usage) }}
+      </b>
+
+      <span class="mono" style="
+                color:var(--color-text-muted);
+                white-space:nowrap;
+              ">
+        {{ usage.totalTokens.toLocaleString() }}
+        tokens
+        ·
+        {{ usage.totalRequests }}
+        requests
+        ·
+        {{ userTokenPercentage(usage.totalTokens).toFixed(2) }}%
+      </span>
+
+    </div>
+
+
+    <!-- PROGRESS BAR -->
+    <app-progress-bar [percent]="userTokenPercentage(usage.totalTokens)" />
+
   </div>
+
+  }
+
+  }
+
+</div>
+
 }
