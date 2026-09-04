@@ -15,4 +15,16 @@ export class QuotaService {
       .get<ApiResponse<QuotaSummary>>(`${environment.apiBaseUrl}${API_ENDPOINTS.quota.root}`)
       .pipe(map((res) => res.data));
   }
+
+  getAnthropicUsage(): Observable<any> {
+    return this.http.get<any>(
+      `${environment.apiBaseUrl}${API_ENDPOINTS.quota.getAnthropicUsage}`,
+    );
+  }
+
+  getAllUsersAiTokenUsage(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${environment.apiBaseUrl}${API_ENDPOINTS.quota.getAllUsersAiTokenUsage}`,
+    );
+  }
 }
