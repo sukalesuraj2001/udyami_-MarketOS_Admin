@@ -1,17 +1,26 @@
-<div class="phead">
+<div class="incident-intro">
   <div>
-    <h1>Incidents</h1>
-    <p>Anything that could touch a client's account standing or their money.</p>
+    <div class="eyebrow">DIGITAL MARKETING CONTROL ROOM</div>
+    <h1>Campaign signals</h1>
+    <p>Early warnings before creative, audience, or delivery issues become account problems.</p>
   </div>
+  <div class="live-pulse"><i></i> Monitoring live</div>
 </div>
 
-@if (loading()) {
-<div class="card" style="margin-bottom:12px"><app-skeleton [height]="90" /></div>
-<div class="card"><app-skeleton [height]="90" /></div>
-} @else {
+<section class="signal-board">
 @for (incident of incidents(); track incident.id) {
-<app-incident-card [incident]="incident" (dismissed)="dismiss(incident)" />
+<article class="signal-card" [style.--signal-color]="signalColor(incident)">
+  <div class="signal-icon" aria-hidden="true">{{ icon(incident) }}</div>
+  <div class="signal-main">
+    <div class="signal-meta"><span class="signal-severity">{{ severityLabel(incident) }}</span><span class="signal-time">{{ incident.tenantName }} · just now</span></div>
+    <h2>{{ incident.title }}</h2>
+    <p>{{ incident.description }}</p>
+    <div class="signal-tags"><span class="signal-tag">{{ incident.tenantName }}</span><span class="signal-tag">Creative delivery</span><span class="signal-tag">Needs review</span></div>
+  </div>
+  <div class="signal-actions"><button class="btn btn-sm btn-gold" type="button">{{ incident.actionLabel }}</button><button class="btn btn-sm" type="button" (click)="dismiss(incident)">Dismiss</button></div>
+  <div class="signal-impact"><span>Campaign pressure</span><div class="impact-bar" [style.--impact]="impact(incident)"><i></i></div><span class="impact-score">{{ impact(incident) }}</span></div>
+</article>
 } @empty {
-<div class="card"><app-empty-state message="No Incidents Register Yet ." /></div>
+<div class="empty-signal">No campaign signals are active right now.</div>
 }
-}
+</section>

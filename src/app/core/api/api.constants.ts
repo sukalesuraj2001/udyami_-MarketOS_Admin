@@ -20,6 +20,12 @@ export const API_ENDPOINTS = {
     activate: (id: string) => `/admin/tenants/${id}/activate`,
     impersonationRequest: (id: string) => `/admin/tenants/${id}/impersonation-request`,
   },
+  marketingCalendar: {
+    byUser: (id: string) => `/aicalender/getMarketingCalendar/${id}`,
+  },
+  generatedContent: {
+    byUser: (id: string) => `/create-content/getGeneratedContent/${id}`,
+  },
   incidents: {
     root: '/admin/incidents',
     byId: (id: string) => `/admin/incidents/${id}`,
