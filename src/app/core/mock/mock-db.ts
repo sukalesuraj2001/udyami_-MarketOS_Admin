@@ -1,5 +1,5 @@
 import {
-  Tenant, Incident, Job, QuotaSummary, UsageSummary, FeatureFlag, AuditEntry, DashboardSummary,
+  Tenant, Incident, Job, QuotaSummary, UsageSummary, FeatureFlag, AuditEntry, DashboardSummary, EditorTask,
 } from '../models/domain.model';
 import { AppRole } from '../auth/models/user.model';
 
@@ -129,6 +129,79 @@ export const mockDb = {
     { id: 'u1', name: 'Yogesh', email: 'yogesh@jyovix.in', password: 'admin123', initials: 'YO', role: AppRole.SuperAdmin },
     { id: 'u2', name: 'Asha', email: 'asha@jyovix.in', password: 'editor123', initials: 'AS', role: AppRole.Editor },
   ],
+
+  editorTasks: [
+    {
+      id: 'et1', tenant: 'Sri Lakshmi Industries', title: 'Shop-floor tolerance check — Instagram Reel', type: 'reel',
+      scheduledDate: '2026-09-06',
+      aiPrompt: 'Vertical 9:16, 20-25s. Open on a wide shot of the shop floor at golden hour, CNC machines idle for the day. Cut to close-ups of precision-tolerance gauges and a technician\'s satisfied nod. Overlay text: "Precision you can measure." End on the brand logo sting. Music: minimal, confident, building slightly. Avoid showing any unfinished/WIP components in frame.',
+      assets: [{ name: 'shopfloor-wide.jpg', url: 'https://placehold.co/64x64/1a1a1a/e0a030?text=SL' }],
+      status: 'published', assignedEditor: 'Ravi Kumar', notes: 'Used the 6pm golden-hour take, client approved on first pass.',
+      completedAt: '2026-09-02T14:20:00.000Z',
+    },
+    {
+      id: 'et2', tenant: 'Nandi Foods', title: 'Nandi Foods — Diwali Reel', type: 'reel',
+      scheduledDate: '2026-09-10',
+      aiPrompt: 'Vertical 9:16, 20-25s. Open on packets of Nandi Foods snacks arranged in a rangoli pattern. Cut to diyas being lit near the packaging line. Overlay text: "Precision meets tradition — Happy Diwali from Nandi Foods." End on brand logo sting. Music: warm, traditional instrumental building to an uplifting close.',
+      assets: [
+        { name: 'diwali-rangoli-ref.jpg', url: 'https://placehold.co/64x64/1a1a1a/9b7bd4?text=NF' },
+        { name: 'brand-guide.png', url: 'https://placehold.co/64x64/1a1a1a/5a9bd8?text=BG' },
+      ],
+      status: 'in_progress', assignedEditor: 'Asha Shetty', notes: 'Color grading pass in progress, waiting on final VO.',
+      completedAt: null,
+    },
+    {
+      id: 'et3', tenant: 'Malnad Estates', title: 'Site walkthrough — YouTube Short', type: 'youtube_short',
+      scheduledDate: '2026-09-05',
+      aiPrompt: 'Vertical 9:16, up to 60s. Drone-style walkthrough of the plotted estate, ending on the sales office. Captions burned in with plot numbers and price ranges. CTA card at the end: "Book a site visit — link in bio." Tone: aspirational, unhurried.',
+      assets: [],
+      status: 'pending', assignedEditor: 'Ravi Kumar', notes: '',
+      completedAt: null,
+    },
+    {
+      id: 'et4', tenant: 'Kaveri Textiles', title: 'New loom line demo — Video', type: 'video',
+      scheduledDate: '2026-09-12',
+      aiPrompt: 'Horizontal 16:9, 45-60s. Show the new automated loom line in motion from three angles, cut on the beat of the machine rhythm. Include one interview clip (provided separately) of the floor supervisor. Lower-third with tenant name and loom model. End card with contact details.',
+      assets: [{ name: 'loom-line-bshots.mp4', url: 'https://placehold.co/64x64/1a1a1a/e5644e?text=KT' }],
+      status: 'pending', assignedEditor: 'Asha Shetty', notes: '',
+      completedAt: null,
+    },
+    {
+      id: 'et5', tenant: 'Coorg Coffee Co', title: 'Harvest season — YouTube Long', type: 'youtube_long',
+      scheduledDate: '2026-09-03',
+      aiPrompt: 'Horizontal 16:9, 3-4 min mini-documentary. Follow a coffee picker through the harvest morning — picking, sorting, drying yard. Voiceover (script attached) over ambient estate sound. Grade warm and earthy. End with the Coorg Coffee Co. logo and tasting-notes card.',
+      assets: [
+        { name: 'harvest-b-roll-1.jpg', url: 'https://placehold.co/64x64/1a1a1a/3fb27f?text=CC' },
+        { name: 'harvest-b-roll-2.jpg', url: 'https://placehold.co/64x64/1a1a1a/3fb27f?text=CC' },
+      ],
+      status: 'done', assignedEditor: 'Ravi Kumar', notes: 'Rough cut approved, just needs final audio mix before publish.',
+      completedAt: new Date().toISOString(),
+    },
+    {
+      id: 'et6', tenant: 'Vidya Coaching', title: 'Batch results celebration — Reel', type: 'reel',
+      scheduledDate: '2026-09-08',
+      aiPrompt: 'Vertical 9:16, 15-20s. Fast-cut celebration montage — students opening result cards, confetti, faculty applauding. Overlay text with the batch\'s top rank/score callouts (numbers to be supplied). Upbeat, high-energy music. End on admissions-open CTA card.',
+      assets: [],
+      status: 'in_progress', assignedEditor: 'Asha Shetty', notes: 'Have the raw footage, waiting on final score list from the tenant to overlay.',
+      completedAt: null,
+    },
+    {
+      id: 'et7', tenant: 'Sagar Motors', title: 'Festive offer — Video', type: 'video',
+      scheduledDate: '2026-09-14',
+      aiPrompt: 'Horizontal 16:9, 30s. Showroom walkaround of the featured model at night with dealership lighting. Bold on-screen offer callout (finance rate, exchange bonus). End card with showroom address and phone number. Tone: premium, confident.',
+      assets: [{ name: 'showroom-night-ref.jpg', url: 'https://placehold.co/64x64/1a1a1a/5a9bd8?text=SM' }],
+      status: 'pending', assignedEditor: 'Ravi Kumar', notes: '',
+      completedAt: null,
+    },
+    {
+      id: 'et8', tenant: 'Bhoomi Organics', title: 'Farm to table story — YouTube Short', type: 'youtube_short',
+      scheduledDate: '2026-08-30',
+      aiPrompt: 'Vertical 9:16, up to 60s. Quick story arc: farm harvest → packing → retail shelf → customer. Captions burned in, no VO needed. Close on the Bhoomi Organics logo and "100% traceable" tagline.',
+      assets: [],
+      status: 'published', assignedEditor: 'Asha Shetty', notes: 'Published to Shorts, performing well — 40k views in first two days.',
+      completedAt: '2026-08-31T11:05:00.000Z',
+    },
+  ] as EditorTask[],
 };
 
 export function computeDashboardSummary(): DashboardSummary {

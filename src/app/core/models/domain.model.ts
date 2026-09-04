@@ -205,3 +205,27 @@ export interface DigitalUserSummary {
   count: number;
   users: DigitalUser[];
 }
+
+// ---- Editor role: content calendar tasks (reels/videos/YouTube items) ----
+
+export type EditorTaskType = 'reel' | 'video' | 'youtube_short' | 'youtube_long';
+export type EditorTaskStatus = 'pending' | 'in_progress' | 'done' ;
+
+export interface EditorTaskAsset {
+  name: string;
+  url: string;
+}
+
+export interface EditorTask {
+  id: string;
+  tenant: string;
+  title: string;
+  type: EditorTaskType;
+  scheduledDate: string;
+  aiPrompt: string;
+  assets: EditorTaskAsset[];
+  status: EditorTaskStatus;
+  assignedEditor: string;
+  notes: string;
+  completedAt: string | null;
+}
