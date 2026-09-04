@@ -27,7 +27,13 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
       </div>
 
       <section class="tenant-strip">
-        <div class="tenant-avatar">{{ initials() }}</div>
+        <div class="tenant-avatar">
+          @if (user()?.profile?.profileImage) {
+            <img [src]="user()?.profile?.profileImage || ''" [alt]="user()?.name || 'Tenant profile'" />
+          } @else {
+            {{ initials() }}
+          }
+        </div>
         <div class="tenant-identity">
           <strong>{{ user()?.name || 'Loading tenant' }}</strong>
           <span>{{ user()?.email || 'Tenant profile' }}</span>
@@ -63,7 +69,7 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
           } @else {
           <div class="calendar-grid">
             @for (day of calendarDays(); track day.iso) {
-              <button class="calendar-day" [class.muted-day]="!day.isCurrentMonth" [class.today]="day.isToday" type="button">
+              <button class="calendar-day" [class.muted-day]="!day.isCurrentMonth" [class.today]="day.isToday" [class.has-activity]="hasDayData(day.iso)" type="button">
                 <span class="day-number">{{ day.date }}</span>
                 @if (eventsFor(day.iso); as events) {
                   @for (item of events; track item.day) {
@@ -73,6 +79,25 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
                       <small>{{ item.time }} · {{ item.platform.replace('_', ' ') }}</small>
                     </span>
                   }
+                }
+                @if (hasDayData(day.iso)) {
+                  <span class="day-dossier">
+                    <span class="dossier-header"><b>{{ shortDate(day.iso) }}</b><i>DAY BRIEF</i></span>
+                    <span class="dossier-orbit"></span>
+                    @for (item of eventsFor(day.iso); track item.day) {
+                      <span class="dossier-row">
+                        <i class="dossier-dot" [style.--event-accent]="eventAccent(item.activity)"></i>
+                        <span><b>{{ item.time }} · {{ item.platform.replace('_', ' ') }}</b><strong>{{ item.title }}</strong><small>{{ item.description }}</small></span>
+                      </span>
+                    }
+                    @for (item of generatedFor(day.iso); track item.id) {
+                      <span class="dossier-row generated-row">
+                        <i class="dossier-dot" [style.--event-accent]="eventAccent(item.activityType)"></i>
+                        <span><b>GENERATED · {{ item.contentType }}</b><strong>{{ contentTitle(item) }}</strong><small>{{ displayStatus(item) }} · {{ item.productName || 'Marketing asset' }}</small></span>
+                      </span>
+                    }
+                    <span class="dossier-footer">Hover to inspect · {{ dayDataCount(day.iso) }} records</span>
+                  </span>
                 }
               </button>
             }
@@ -160,7 +185,8 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
     .heading-actions { display:flex; align-items:center; gap:12px; }
     .admin-badge { border:1px solid rgba(224,160,48,.35); background:rgba(224,160,48,.1); color:var(--color-warning); border-radius:5px; padding:6px 9px; font-size:10px; font-weight:700; letter-spacing:.08em; }
     .tenant-strip { display:flex; align-items:center; gap:13px; background:linear-gradient(105deg, var(--color-surface-secondary), var(--color-surface)); border:1px solid var(--color-border); border-radius:10px; padding:14px 17px; margin-bottom:18px; }
-    .tenant-avatar { width:42px; height:42px; display:grid; place-items:center; border-radius:10px; background:var(--color-primary-fade); border:1px solid var(--color-primary); color:var(--color-primary); font-weight:700; }
+    .tenant-avatar { width:42px; height:42px; display:grid; place-items:center; overflow:hidden; border-radius:10px; background:var(--color-primary-fade); border:1px solid var(--color-primary); color:var(--color-primary); font-weight:700; }
+    .tenant-avatar img { width:100%; height:100%; object-fit:cover; }
     .tenant-identity { display:flex; flex-direction:column; gap:3px; min-width:190px; }
     .tenant-identity span { color:var(--color-text-dim); font-size:11px; }
     .content-details p { color:var(--color-text-dim); font-size:11px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
@@ -181,6 +207,7 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
     .calendar-day:nth-child(7n) { border-right:1px solid var(--color-border); }
     .calendar-day:nth-last-child(-n+7) { border-bottom:1px solid var(--color-border); }
     .calendar-day:hover { z-index:2; background:var(--color-surface-tertiary); border-color:var(--color-primary); box-shadow:0 8px 20px rgba(0,0,0,.18); transform:translateY(-3px) scale(1.015); }
+    .calendar-day.has-activity::after { content:""; position:absolute; right:8px; top:11px; width:5px; height:5px; border-radius:50%; background:var(--color-primary); box-shadow:0 0 0 4px var(--color-primary-fade); animation:date-beacon 2.4s ease-in-out infinite; }
     .day-number { display:grid; place-items:center; width:23px; height:23px; border-radius:50%; font-size:12px; margin-bottom:7px; }
     .calendar-day.today .day-number { background:var(--color-primary); color:var(--color-primary-contrast); font-weight:700; }
     .muted-day { opacity:.38; }
@@ -190,6 +217,23 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
     .day-event b { color:var(--event-accent, var(--color-primary)); font-size:8px; letter-spacing:.06em; text-transform:uppercase; }
     .day-event strong { overflow:hidden; font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
     .day-event small { color:var(--color-text-dim); font-size:9px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .day-dossier { position:absolute; z-index:20; left:calc(100% - 8px); top:12px; display:flex; flex-direction:column; gap:9px; width:270px; padding:13px; border:1px solid rgba(224,160,48,.62); border-radius:10px; background:linear-gradient(135deg, #fff7e6 0%, #e5f3ef 52%, #e4edf7 100%); box-shadow:0 18px 38px rgba(39,74,79,.2), 0 0 0 1px rgba(255,255,255,.65); color:#20383b; opacity:0; pointer-events:none; transform:translateX(-12px) scale(.94) rotateY(-8deg); transform-origin:left center; transition:opacity .22s ease, transform .3s cubic-bezier(.2,.8,.2,1); }
+    .calendar-day:nth-child(7n) .day-dossier, .calendar-day:nth-child(7n-1) .day-dossier { left:auto; right:calc(100% - 8px); transform-origin:right center; transform:translateX(12px) scale(.94) rotateY(8deg); }
+    .calendar-day:hover .day-dossier, .calendar-day:focus-visible .day-dossier { opacity:1; pointer-events:auto; transform:translateX(0) scale(1) rotateY(0); }
+    .dossier-header { display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(32,56,59,.14); padding-bottom:9px; }
+    .dossier-header b { color:#b36d16; font-family:'JetBrains Mono',monospace; font-size:12px; }
+    .dossier-header i { color:#5c7474; font-size:8px; font-style:normal; font-weight:800; letter-spacing:.13em; }
+    .dossier-orbit { position:absolute; z-index:-1; top:calc(100% - 7px); right:18px; width:24px; height:24px; border:1px solid rgba(179,109,22,.42); border-radius:50%; background:rgba(255,247,230,.6); box-shadow:0 0 0 5px rgba(179,109,22,.07), 0 5px 14px rgba(179,109,22,.2); animation:orbit-drift 7s ease-in-out infinite; }
+    .dossier-row { display:flex; gap:8px; align-items:flex-start; animation:dossier-row-in .35s both; }
+    .dossier-row:nth-of-type(3) { animation-delay:.06s; }
+    .dossier-row:nth-of-type(4) { animation-delay:.12s; }
+    .dossier-dot { flex:none; width:7px; height:7px; margin-top:4px; border-radius:50%; background:var(--event-accent,var(--color-primary)); box-shadow:0 0 9px var(--event-accent,var(--color-primary)); }
+    .dossier-row span { display:flex; flex-direction:column; gap:2px; min-width:0; }
+    .dossier-row b { color:var(--event-accent,var(--color-primary)); font-size:8px; letter-spacing:.04em; text-transform:uppercase; }
+    .dossier-row strong { overflow:hidden; font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+    .dossier-row small { display:-webkit-box; overflow:hidden; color:#5c7474; font-size:9px; line-height:1.3; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+    .dossier-footer { border-top:1px solid rgba(32,56,59,.14); padding-top:8px; color:#5c7474; font-size:9px; text-align:right; }
+    .generated-row { background:rgba(255,255,255,.5); border-radius:5px; padding:5px; }
     .legend-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--event-accent, var(--color-primary)); margin-right:4px; }
     .calendar-legend { display:flex; gap:16px; color:var(--color-text-dim); font-size:10px; margin-top:14px; }
     .calendar-state { min-height:360px; display:grid; place-items:center; color:var(--color-text-muted); font-size:13px; border:1px dashed var(--color-border); border-radius:8px; }
@@ -237,7 +281,11 @@ type CalendarDay = { date: number; iso: string; isToday: boolean; isCurrentMonth
     @keyframes preview-fade { from { opacity:0; } to { opacity:1; } }
     @keyframes preview-rise { from { opacity:0; transform:translateY(18px) scale(.97); } to { opacity:1; transform:none; } }
     @media (max-width: 900px) { .calendar-layout { grid-template-columns:1fr; } }
-    @media (max-width: 620px) { .calendar-heading, .tenant-strip { align-items:flex-start; flex-direction:column; } .heading-actions, .tenant-facts { margin-left:0; } .tenant-facts { flex-wrap:wrap; gap:10px 18px; } .calendar-panel, .content-panel { padding:14px; } .calendar-day { min-height:88px; padding:6px 5px; } .day-event { font-size:9px; } .weekdays span { padding-left:4px; } .preview-modal { grid-template-columns:1fr; } .preview-media { min-height:230px; max-height:300px; } .preview-copy { padding:22px 18px; } }
+    @keyframes date-beacon { 0%,100% { opacity:.65; transform:scale(.9); } 50% { opacity:1; transform:scale(1.25); } }
+    @keyframes orbit-drift { 0%,100% { transform:translate(0,0) rotate(0deg) scale(.9); } 24% { transform:translate(-9px,5px) rotate(70deg) scale(1.05); } 52% { transform:translate(5px,10px) rotate(155deg) scale(.82); } 77% { transform:translate(12px,3px) rotate(245deg) scale(1.12); } }
+    @keyframes dossier-row-in { from { opacity:0; transform:translateX(-5px); } to { opacity:1; transform:none; } }
+    @media (max-width: 900px) { .day-dossier { left:0; top:calc(100% + 8px); transform:translateY(-8px) scale(.94); transform-origin:top left; } .calendar-day:nth-child(7n) .day-dossier, .calendar-day:nth-child(7n-1) .day-dossier { left:0; right:auto; transform:translateY(-8px) scale(.94); transform-origin:top left; } .calendar-day:hover .day-dossier, .calendar-day:focus-visible .day-dossier { transform:translateY(0) scale(1); } }
+    @media (max-width: 620px) { .calendar-heading, .tenant-strip { align-items:flex-start; flex-direction:column; } .heading-actions, .tenant-facts { margin-left:0; } .tenant-facts { flex-wrap:wrap; gap:10px 18px; } .calendar-panel, .content-panel { padding:14px; } .calendar-day { min-height:88px; padding:6px 5px; } .day-event { font-size:9px; } .weekdays span { padding-left:4px; } .day-dossier { width:235px; } .preview-modal { grid-template-columns:1fr; } .preview-media { min-height:230px; max-height:300px; } .preview-copy { padding:22px 18px; } }
   `],
 })
 export class TenantCalendarComponent {
@@ -321,6 +369,22 @@ export class TenantCalendarComponent {
 
   eventsFor(iso: string): MarketingCalendarEntry[] {
     return this.entries().filter((item) => item.date.slice(0, 10) === iso);
+  }
+
+  generatedFor(iso: string): GeneratedContentItem[] {
+    return this.generatedContent().filter((item) => item.aiResponse?.activity?.date?.slice(0, 10) === iso);
+  }
+
+  hasDayData(iso: string): boolean {
+    return this.eventsFor(iso).length > 0 || this.generatedFor(iso).length > 0;
+  }
+
+  dayDataCount(iso: string): number {
+    return this.eventsFor(iso).length + this.generatedFor(iso).length;
+  }
+
+  shortDate(iso: string): string {
+    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(`${iso}T00:00:00`));
   }
 
   eventAccent(activity: string): string {
