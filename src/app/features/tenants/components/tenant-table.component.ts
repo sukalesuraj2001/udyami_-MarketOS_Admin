@@ -1,9 +1,8 @@
 import { Component, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
-import { DigitalUser, Tenant } from '../../../core/models/domain.model';
+import { DigitalUser } from '../../../core/models/domain.model';
 import { StorageService } from '../../../core/services/storage.service';
 import { StatusTagComponent } from '../../../shared/components/status-tag/status-tag.component';
-import { ProgressBarComponent } from '../../../shared/components/progress-bar/progress-bar.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
@@ -59,5 +58,9 @@ export class TenantTableComponent {
   showCalender(user: DigitalUser): void {
     this.storage.set('marketos.calendar.userId', user.userId);
     this.router.navigate(['/admin/tenants', user.userId, 'calendar']);
+  }
+
+  showSettings(user: DigitalUser): void {
+    this.router.navigate(['/admin/tenants', user.userId, 'settings']);
   }
 }

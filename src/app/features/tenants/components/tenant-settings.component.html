@@ -1,0 +1,119 @@
+<main class="settings-page">
+  @if (successMessage(); as message) {
+    <div class="success-backdrop" role="presentation">
+      <section class="success-popup" role="alert" aria-live="assertive">
+        <div class="success-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="31" height="31" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6" /></svg>
+        </div>
+        <span class="success-kicker">SUCCESS</span>
+        <h2>Account updated</h2>
+        <p>{{ message }}</p>
+        <div class="success-progress"></div>
+      </section>
+    </div>
+  }
+
+  <header class="settings-heading">
+    <div>
+      <button class="back-link" type="button" (click)="goBack()">← Back to tenants</button>
+      <div class="eyebrow">SUPER ADMIN · ACCOUNT SETTINGS</div>
+      <h1>Connected accounts</h1>
+      <p>Manage social account credentials for this tenant.</p>
+    </div>
+    <span class="admin-badge">SUPER ADMIN ONLY</span>
+  </header>
+
+  <section class="tenant-strip">
+    <div class="tenant-avatar">{{ initials() }}</div>
+    <div class="tenant-identity">
+      <strong>{{ user()?.name || 'Loading tenant' }}</strong>
+      <span>{{ user()?.email || 'Tenant profile' }}</span>
+    </div>
+    <div class="tenant-facts">
+      <span><b>{{ accounts().length }}</b> connected accounts</span>
+      <span><b>{{ user()?.isActive ? 'Active' : 'Suspended' }}</b> status</span>
+    </div>
+  </section>
+
+  @if (loading()) {
+    <section class="state-panel"><span class="pulse-dot"></span> Loading account credentials...</section>
+  } @else if (error()) {
+    <section class="state-panel error-state">
+      <strong>{{ error() }}</strong>
+      <button class="btn btn-sm" type="button" (click)="load()">Try again</button>
+    </section>
+  } @else if (!accounts().length) {
+    <section class="state-panel empty-state">
+      <span class="empty-icon">+</span>
+      <strong>No connected accounts</strong>
+      <span>This tenant has no platform credentials yet.</span>
+    </section>
+  } @else {
+    <section class="accounts-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="section-kicker">CREDENTIAL VAULT</span>
+          <h2>Platform access</h2>
+        </div>
+        <span class="account-count">{{ accounts().length }} records</span>
+      </div>
+
+      <div class="table-scroll">
+        <table class="data-table credentials-table">
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Account ID</th>
+              <th>Access token</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (account of accounts(); track account.id) {
+              <tr class="account-row" [class.is-editing]="editingId() === account.id">
+                <td><span class="platform-mark">{{ account.platform.charAt(0) }}</span><strong>{{ account.platform }}</strong></td>
+                <td><span class="mono">{{ account.username || '—' }}</span></td>
+                <td>
+                  <div class="secret-cell">
+                    <span class="mono">******</span>
+                    <button class="icon-button" type="button" title="Copy password" aria-label="Copy password" [disabled]="!account.password" (click)="copyPassword(account)">
+                      @if (copiedId() === account.id) { ✓ } @else {
+                        <svg aria-hidden="true" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      }
+                    </button>
+                  </div>
+                </td>
+                <td><span class="mono token-value">{{ account.accountId || 'Not added' }}</span></td>
+                <td><span class="mono token-value">{{ account.accessToken || 'Not added' }}</span></td>
+                <td><span class="status-dot" [class.connected]="account.connected && account.isActive"></span>{{ account.connected && account.isActive ? 'Connected' : 'Inactive' }}</td>
+                <td class="action-cell">
+                  <button class="btn btn-sm" type="button" (click)="startEdit(account)">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
+                    Add token & ID
+                  </button>
+                </td>
+              </tr>
+              @if (editingId() === account.id) {
+                <tr class="edit-row">
+                  <td colspan="7">
+                    <form [formGroup]="credentialForm" (ngSubmit)="save(account)">
+                      <div class="form-intro"><strong>Update {{ account.platform }} access</strong><span>Values are sent securely to the account settings service.</span></div>
+                      <div class="inline-fields">
+                        <label class="field"><span>Account ID</span><input class="inp" formControlName="accountId" placeholder="Platform account ID" /></label>
+                        <label class="field"><span>Access token</span><input class="inp" formControlName="accessToken" placeholder="Paste access token" /></label>
+                        <div class="form-actions"><button class="btn btn-sm" type="button" (click)="cancelEdit()">Cancel</button><button class="btn btn-sm btn-gold" type="submit" [disabled]="savingId() === account.id">{{ savingId() === account.id ? 'Saving...' : 'Save changes' }}</button></div>
+                      </div>
+                    </form>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</main>

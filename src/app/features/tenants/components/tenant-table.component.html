@@ -131,9 +131,12 @@
             View More
           </button>
 
-          <button class="btn btn-sm btn-danger" type="button" [disabled]="!user.isActive"
-            (click)="suspendRequested.emit(user)">
-            Suspend
+          <button class="btn btn-sm" type="button" title="Manage account settings" (click)="showSettings(user)">
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+              <path d="m19.4 15 .1.1a2 2 0 1 1-2.8 2.8l-.1-.1a2 2 0 0 0-3.4 1.4v.2a2 2 0 1 1-4 0v-.2a2 2 0 0 0-3.4-1.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A2 2 0 0 0 3.6 11H3.5a2 2 0 1 1 0-4h.2a2 2 0 0 0 1.4-3.4L5 3.5a2 2 0 1 1 2.8-2.8l.1.1A2 2 0 0 0 11.3 2h.2a2 2 0 1 1 4 0v.2a2 2 0 0 0 3.4 1.4l.1-.1A2 2 0 1 1 21.8 6l-.1.1A2 2 0 0 0 20.3 9h.2a2 2 0 1 1 0 4h-.2a2 2 0 0 0-1.4 2Z" transform="scale(.85) translate(2.1 2.1)" />
+            </svg>
+            Settings
           </button>
 
         </td>
