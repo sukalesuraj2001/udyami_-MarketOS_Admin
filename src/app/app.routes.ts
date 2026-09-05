@@ -30,6 +30,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/tenants/components/tenant-calendar.component').then((m) => m.TenantCalendarComponent),
       },
       {
+        path: 'tenants/:userId/settings',
+        canActivate: [roleGuard([AppRole.SuperAdmin])],
+        loadComponent: () => import('./features/tenants/components/tenant-settings.component').then((m) => m.TenantSettingsComponent),
+      },
+      {
         path: 'tenants',
         loadComponent: () => import('./features/tenants/tenants.component').then((m) => m.TenantsComponent),
       },

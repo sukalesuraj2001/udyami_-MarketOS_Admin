@@ -20,6 +20,10 @@ export const API_ENDPOINTS = {
     activate: (id: string) => `/admin/tenants/${id}/activate`,
     impersonationRequest: (id: string) => `/admin/tenants/${id}/impersonation-request`,
   },
+  settings: {
+    allAccounts: '/setting/getAllAccountsCred',
+    updateAccount: (id: string) => `/setting/addAccessTokenAndID/${id}`,
+  },
   marketingCalendar: {
     byUser: (id: string) => `/aicalender/getMarketingCalendar/${id}`,
   },
