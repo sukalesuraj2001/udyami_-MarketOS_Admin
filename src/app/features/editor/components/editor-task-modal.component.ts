@@ -40,6 +40,7 @@ export class EditorTaskModalComponent implements OnInit {
   readonly closed = output<void>();
   readonly showVideoUpload = signal<boolean>(false);
   readonly selectedVideo = signal<File | null>(null);
+  readonly isUploading = signal<boolean>(false);
 
   ngOnInit(): void {
     this.getContent();
@@ -417,20 +418,41 @@ export class EditorTaskModalComponent implements OnInit {
   }
 
   submitVideo(): void {
-    if (!this.selectedVideo()) {
+    const content = this.content();
+    const video = this.selectedVideo();
+
+    if (!content || !video) {
       return;
     }
 
-    this.logSelectedVideo();
-    this.notifications.success(
-      'Video submitted',
-      'The video is ready to be published.'
-    );
-    this.closeVideoUpload();
-    this.close();
+    this.isUploading.set(true);
+
+    this.editorService.uploadMedia(content.id, video).subscribe({
+      next: () => {
+        this.isUploading.set(false);
+        this.notifications.success(
+          'Video uploaded',
+          'The video is ready to be published.'
+        );
+        this.closeVideoUpload();
+        this.close();
+      },
+      error: (error) => {
+        this.isUploading.set(false);
+        console.error('Failed to upload video:', error);
+        this.notifications.error(
+          'Upload failed',
+          'Unable to upload the video. Please try again.'
+        );
+      },
+    });
   }
 
   closeVideoUpload(): void {
+    if (this.isUploading()) {
+      return;
+    }
+
     this.showVideoUpload.set(false);
     this.selectedVideo.set(null);
   }

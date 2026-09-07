@@ -20,6 +20,19 @@ export class Editor {
       .pipe(map((res) => res?.data ?? res));
   }
 
+  // Upload final media for an editor content item
+  uploadMedia(contentId: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    return this.http
+      .post<ApiResponse<any>>(
+        `${environment.apiBaseUrl}${API_ENDPOINTS.editor.uploadMedia(contentId)}`,
+        formData
+      )
+      .pipe(map((res) => res?.data ?? res));
+  }
+
   // Update editor ID and editor status
   updateContentStatus(
     contentId: string,

@@ -722,7 +722,7 @@
 </app-modal-shell>
 
 @if (showVideoUpload()) {
-<app-modal-shell title="Upload video" (closed)="closeVideoUpload()">
+<app-modal-shell title="Upload video" [dismissible]="!isUploading()" (closed)="closeVideoUpload()">
   <div modal-body>
     <div class="video-upload-container">
       <div class="upload-intro">
@@ -735,9 +735,9 @@
         <div class="upload-icon" aria-hidden="true">VIDEO</div>
         <strong>Drop your video here</strong>
         <span>or</span>
-        <label class="upload-button">
+        <label class="upload-button" [class.disabled]="isUploading()">
           Browse files
-          <input type="file" accept="video/*" hidden (change)="onVideoSelected($event)" />
+          <input type="file" accept="video/*" hidden [disabled]="isUploading()" (change)="onVideoSelected($event)" />
         </label>
         <small>MP4, MOV or WebM · Maximum file size 500 MB</small>
       </div>
@@ -749,7 +749,7 @@
           <strong>{{ video.name }}</strong>
           <span>{{ (video.size / 1024 / 1024).toFixed(2) }} MB · Ready to publish</span>
         </div>
-        <button class="modal-close" type="button" aria-label="Remove selected video"
+        <button class="modal-close" type="button" aria-label="Remove selected video" [disabled]="isUploading()"
           (click)="selectedVideo.set(null)">×</button>
       </div>
       }
@@ -757,13 +757,23 @@
   </div>
 
   <div modal-footer>
-    <button class="btn btn-sm" type="button" (click)="closeVideoUpload()">
+    <button class="btn btn-sm" type="button" [disabled]="isUploading()" (click)="closeVideoUpload()">
       Cancel
     </button>
-    <button class="btn btn-gold" type="button" [disabled]="!selectedVideo()" (click)="submitVideo()">
+    <button class="btn btn-gold" type="button" [disabled]="!selectedVideo() || isUploading()" (click)="submitVideo()">
       Submit video
     </button>
   </div>
 </app-modal-shell>
+}
+
+@if (isUploading()) {
+<div class="upload-loading-overlay" role="status" aria-live="polite" aria-label="Uploading video">
+  <div class="upload-loading-popup">
+    <span class="upload-spinner" aria-hidden="true"></span>
+    <strong>Uploading video</strong>
+    <span>Please wait while your video is uploaded.</span>
+  </div>
+</div>
 }
 }
