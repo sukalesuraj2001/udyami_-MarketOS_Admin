@@ -66,6 +66,9 @@ export const API_ENDPOINTS = {
   editor: {
     getAllContent: '/create-content/getEditorContent',
 
+    uploadMedia: (contentId: string) =>
+      `/create-content/${contentId}/upload-media`,
+
     updateContentStatus: (contentId: string) =>
       `/create-content/updateContentStatus/${contentId}`,
 
