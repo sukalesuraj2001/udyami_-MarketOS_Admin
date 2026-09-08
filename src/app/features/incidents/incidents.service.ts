@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { API_ENDPOINTS } from '../../core/api/api.constants';
-import { ApiResponse, PaginatedResponse } from '../../core/api/api-response.model';
 import { Incident } from '../../core/models/domain.model';
 
 @Injectable({ providedIn: 'root' })
@@ -13,13 +12,15 @@ export class IncidentsService {
 
   list(): Observable<Incident[]> {
     return this.http
-      .get<ApiResponse<PaginatedResponse<Incident>>>(`${this.base}${API_ENDPOINTS.incidents.root}`)
-      .pipe(map((res) => res.data.items));
+      .get<Incident[]>(`${this.base}${API_ENDPOINTS.incidents.root}`);
   }
 
-  dismiss(id: string): Observable<void> {
+  resolve(incident: Incident): Observable<Incident> {
     return this.http
-      .post<ApiResponse<{ dismissed: boolean }>>(`${this.base}${API_ENDPOINTS.incidents.dismiss(id)}`, {})
-      .pipe(map(() => void 0));
+      .patch<Incident>(
+        `${this.base}${API_ENDPOINTS.incidents.updateStatus(incident.id)}`,
+        { userId: incident.userId, status: 'RESOLVED' },
+      )
+      .pipe(map((res) => res));
   }
 }

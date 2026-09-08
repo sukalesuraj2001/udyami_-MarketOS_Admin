@@ -19,16 +19,33 @@ export interface Tenant {
   healthTier: TenantHealthTier;
 }
 
-export type IncidentSeverity = 'action_needed' | 'watch' | 'informational';
-
 export interface Incident {
   id: string;
-  severity: IncidentSeverity;
+  userId?: string;
+  generatedContentId?: string | null;
+  calendarId?: string | null;
+  activityId?: string | null;
+  activityType?: string | null;
+  provider?: string | null;
+  model?: string | null;
+  incidentType?: string;
+  severity: string;
   title: string;
-  description: string;
+  message?: string;
+  description?: string;
+  errorMessage?: string | null;
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number;
+  tokenLimit?: number | null;
+  metadata?: Record<string, unknown> | null;
+  status?: string;
+  resolved?: boolean;
+  resolvedAt?: string | null;
   tenantName?: string;
-  actionLabel: string;
+  actionLabel?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export type JobStatus = 'queued' | 'running' | 'failed' | 'completed';
