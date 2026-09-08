@@ -1,11 +1,16 @@
+import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { Incident } from '../../core/models/domain.model';
+import { DigitalUser } from '../../core/models/domain.model';
 import { NotificationService } from '../../core/services/notification.service';
+import { IncidentsService } from './incidents.service';
+import { TenantsService } from '../tenants/tenants.service';
 
 @Component({
   selector: 'app-incidents-page',
   standalone: true,
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './incidents.component.html',
   styles: [`
     :host { display:block; }
@@ -26,6 +31,8 @@ import { NotificationService } from '../../core/services/notification.service';
     .signal-severity { color:var(--signal-color); font-size:10px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
     .signal-time { color:var(--color-text-dim); font-size:10px; }
     .signal-card h2 { margin:0 0 7px; font-size:16px; line-height:1.3; }
+    .signal-owner { display:flex; flex-wrap:wrap; gap:12px; margin:0 0 8px; color:var(--color-text-dim); font-size:11px; }
+    .signal-owner span + span { padding-left:12px; border-left:1px solid var(--color-border); }
     .signal-card p { margin:0; max-width:72ch; color:var(--color-text-muted); font-size:12.5px; line-height:1.6; }
     .signal-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:13px; }
     .signal-tag { padding:4px 7px; border-radius:5px; background:var(--color-surface-tertiary); color:var(--color-text-dim); font-size:10px; font-weight:700; }
@@ -44,30 +51,61 @@ import { NotificationService } from '../../core/services/notification.service';
   `],
 })
 export class IncidentsComponent {
+  private readonly incidentsService = inject(IncidentsService);
+  private readonly tenantsService = inject(TenantsService);
   private readonly notifications = inject(NotificationService);
 
-  readonly incidents = signal<Incident[]>([
-    {
-      id: 'demo-incident-1', severity: 'action_needed',
-      title: 'Nandi Foods · Reels campaign has lost its creative window',
-      description: 'Four approved assets are waiting on a refreshed product cut. If the handoff slips beyond 18:00, the Diwali awareness flight will launch with only 62% of its planned creative mix.',
-      tenantName: 'Nandi Foods', actionLabel: 'Open campaign', createdAt: new Date().toISOString(),
-    },
-    {
-      id: 'demo-incident-2', severity: 'watch',
-      title: 'Kaveri Textiles · Instagram frequency is climbing',
-      description: 'The same audience segment is seeing the loom-line story too often. Rotate the next creative before fatigue pushes the campaign CPM above its current benchmark.',
-      tenantName: 'Kaveri Textiles', actionLabel: 'Review fatigue', createdAt: new Date().toISOString(),
-    },
-  ]);
+  readonly incidents = signal<Incident[]>([]);
+  readonly users = signal<Record<string, DigitalUser>>({});
+  readonly loading = signal(true);
 
-  impact(incident: Incident): string { return incident.severity === 'action_needed' ? '84%' : '57%'; }
-  icon(incident: Incident): string { return incident.severity === 'action_needed' ? '!' : '~'; }
-  severityLabel(incident: Incident): string { return incident.severity === 'action_needed' ? 'Action needed' : 'Watch signal'; }
-  signalColor(incident: Incident): string { return incident.severity === 'action_needed' ? 'var(--color-danger)' : 'var(--color-warning)'; }
+  constructor() {
+    this.load();
+  }
 
-  dismiss(incident: Incident): void {
-    this.incidents.update((list) => list.filter((i) => i.id !== incident.id));
-    this.notifications.info('Signal dismissed', 'Demo incident removed from the board.');
+  load(): void {
+    this.loading.set(true);
+    forkJoin({ incidents: this.incidentsService.list(), users: this.tenantsService.list() }).subscribe({
+      next: ({ incidents, users }) => {
+        this.incidents.set(incidents);
+        this.users.set(Object.fromEntries(users.map((user) => [user.userId, user])));
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.notifications.error('Unable to load incidents', 'Please try again later.');
+      },
+    });
+  }
+
+  impact(incident: Incident): string {
+    return incident.severity === 'CRITICAL' ? '100%' : incident.severity === 'HIGH' ? '84%' : '57%';
+  }
+  icon(incident: Incident): string { return incident.severity === 'CRITICAL' ? '!' : '~'; }
+  severityLabel(incident: Incident): string { return incident.severity.replaceAll('_', ' '); }
+  signalColor(incident: Incident): string {
+    return incident.severity === 'CRITICAL' ? 'var(--color-danger)' : 'var(--color-warning)';
+  }
+
+  userName(incident: Incident): string {
+    return incident.userId ? this.users()[incident.userId]?.name || 'Unknown user' : 'Unknown user';
+  }
+
+  businessName(incident: Incident): string {
+    return incident.userId
+      ? this.users()[incident.userId]?.profile?.businessDetails?.businessName || 'Business not available'
+      : 'Business not available';
+  }
+
+  resolve(incident: Incident): void {
+    if (incident.resolved || incident.status === 'RESOLVED') return;
+
+    this.incidentsService.resolve(incident).subscribe({
+      next: (updatedIncident) => {
+        this.incidents.update((list) => list.map((item) => item.id === updatedIncident.id ? updatedIncident : item));
+        this.notifications.success('Incident resolved', updatedIncident.title);
+      },
+      error: () => this.notifications.error('Unable to resolve incident', 'Please try again later.'),
+    });
   }
 }

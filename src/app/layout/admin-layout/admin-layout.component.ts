@@ -30,7 +30,7 @@ export class AdminLayoutComponent {
       {
         label: 'Operations',
         items: [
-          { path: '/admin/jobs', icon: '≡', label: 'Job queue' },
+          // { path: '/admin/jobs', icon: '≡', label: 'Job queue' },
           { path: '/admin/quota', icon: '◫', label: 'API quota' },
         ],
       },

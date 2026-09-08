@@ -8,19 +8,24 @@
 </div>
 
 <section class="signal-board">
+@if (loading()) {
+<div class="empty-signal">Loading incidents...</div>
+} @else {
 @for (incident of incidents(); track incident.id) {
 <article class="signal-card" [style.--signal-color]="signalColor(incident)">
   <div class="signal-icon" aria-hidden="true">{{ icon(incident) }}</div>
   <div class="signal-main">
-    <div class="signal-meta"><span class="signal-severity">{{ severityLabel(incident) }}</span><span class="signal-time">{{ incident.tenantName }} · just now</span></div>
+    <div class="signal-meta"><span class="signal-severity">{{ severityLabel(incident) }}</span><span class="signal-time">{{ incident.activityType || 'Incident' }} · {{ incident.createdAt | date:'medium' }}</span></div>
     <h2>{{ incident.title }}</h2>
-    <p>{{ incident.description }}</p>
-    <div class="signal-tags"><span class="signal-tag">{{ incident.tenantName }}</span><span class="signal-tag">Creative delivery</span><span class="signal-tag">Needs review</span></div>
+    <div class="signal-owner"><span>{{ businessName(incident) }}</span><span>{{ userName(incident) }}</span></div>
+    <p>{{ incident.message }}</p>
+    <div class="signal-tags"><span class="signal-tag">{{ incident.incidentType }}</span><span class="signal-tag">{{ incident.status }}</span><span class="signal-tag">{{ incident.activityType || 'Unknown activity' }}</span></div>
   </div>
-  <div class="signal-actions"><button class="btn btn-sm btn-gold" type="button">{{ incident.actionLabel }}</button><button class="btn btn-sm" type="button" (click)="dismiss(incident)">Dismiss</button></div>
+  <div class="signal-actions"><button class="btn btn-sm btn-gold" type="button" [disabled]="incident.resolved || incident.status === 'RESOLVED'" (click)="resolve(incident)">{{ incident.resolved || incident.status === 'RESOLVED' ? 'Resolved' : 'Resolve' }}</button></div>
   <div class="signal-impact"><span>Campaign pressure</span><div class="impact-bar" [style.--impact]="impact(incident)"><i></i></div><span class="impact-score">{{ impact(incident) }}</span></div>
 </article>
 } @empty {
 <div class="empty-signal">No campaign signals are active right now.</div>
+}
 }
 </section>

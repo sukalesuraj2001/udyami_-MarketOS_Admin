@@ -31,9 +31,8 @@ export const API_ENDPOINTS = {
     byUser: (id: string) => `/create-content/getGeneratedContent/${id}`,
   },
   incidents: {
-    root: '/admin/incidents',
-    byId: (id: string) => `/admin/incidents/${id}`,
-    dismiss: (id: string) => `/admin/incidents/${id}/dismiss`,
+    root: '/incidents/getAllIncidents',
+    updateStatus: (id: string) => `/incidents/updateIncidentStatus/${id}`,
   },
   jobs: {
     root: '/admin/jobs',

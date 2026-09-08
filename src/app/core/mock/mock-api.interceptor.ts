@@ -88,12 +88,15 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
 
   // ---- Incidents ----
   if (path === e.incidents.root && req.method === 'GET') {
-    return paginated(mockDb.incidents);
+    return ok(mockDb.incidents);
   }
-  const dismissMatch = mockDb.incidents.find((i) => path === e.incidents.dismiss(i.id) && req.method === 'POST');
-  if (dismissMatch) {
-    mockDb.incidents = mockDb.incidents.filter((i) => i.id !== dismissMatch.id);
-    return ok({ dismissed: true });
+  const resolveMatch = mockDb.incidents.find((i) => path === e.incidents.updateStatus(i.id) && req.method === 'PATCH');
+  if (resolveMatch) {
+    resolveMatch.status = 'RESOLVED';
+    resolveMatch.resolved = true;
+    resolveMatch.resolvedAt = new Date().toISOString();
+    resolveMatch.updatedAt = resolveMatch.resolvedAt;
+    return ok(resolveMatch);
   }
 
   // ---- Jobs ----

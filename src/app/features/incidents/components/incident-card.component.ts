@@ -27,6 +27,6 @@ export class IncidentCardComponent {
     // These map to real backend workflows (open a CSM task, ping the tenant's
     // contact channel, re-poll a partner API status) — left as a clear
     // integration point pending those endpoints' specs.
-    this.notifications.info(this.incident().actionLabel, 'Action queued for this incident.');
+    this.notifications.info(this.incident().actionLabel ?? 'Incident action', 'Action queued for this incident.');
   }
 }
