@@ -1,0 +1,24 @@
+<section class="ads-page">
+  <div class="phead ads-head">
+    <div><span class="eyebrow">Commercial workspace</span><h1>Run Ads</h1><p>Choose an active business to review its advertising workspace, audience, and campaign readiness.</p></div>
+    <div class="active-count"><i></i>{{ users().length }} active businesses</div>
+  </div>
+  <div class="ads-tools">
+    <label class="search-box"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6" /><path d="m16 16 4 4" /></svg><input type="search" placeholder="Search a business, owner, or location" [value]="query()" (input)="query.set($any($event.target).value)" /></label>
+    <span>Advertising is available to active digital users.</span>
+  </div>
+  @if (loading()) {
+    <div class="ads-grid">@for (item of [1, 2, 3, 4, 5, 6]; track item) { <div class="ad-card skeleton-card"><app-skeleton [height]="218" /></div> }</div>
+  } @else {
+    <div class="ads-grid">
+      @for (user of filteredUsers(); track user.userId) {
+        <article class="ad-card">
+          <div class="card-top"><div class="profile-avatar">@if (user.profile?.profileImage) { <img [src]="user.profile?.profileImage" [alt]="user.name" /> } @else { {{ initials(user) }} }</div><span class="tag tag-ok"><i></i>Eligible</span></div>
+          <div class="business-copy"><h2>{{ businessName(user) }}</h2><p>{{ user.name }} <span>·</span> {{ plan(user) }} member</p></div>
+          <div class="user-meta"><span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></svg>{{ location(user) }}</span><span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>{{ user.email }}</span></div>
+          <button class="btn btn-gold view-ads" type="button" (click)="viewAds(user)">View Ads <span aria-hidden="true">→</span></button>
+        </article>
+      } @empty { <div class="empty-card"><app-empty-state message="No active businesses match your search." /></div> }
+    </div>
+  }
+</section>

@@ -47,6 +47,15 @@ export const routes: Routes = [
         loadComponent: () => import('./features/jobs/jobs.component').then((m) => m.JobsComponent),
       },
       {
+        path: 'run-ads/:userId',
+        canActivate: [roleGuard([AppRole.SuperAdmin])],
+        loadComponent: () => import('./features/run-ads/run-ads-detail.component').then((m) => m.RunAdsDetailComponent),
+      },
+      {
+        path: 'run-ads',
+        loadComponent: () => import('./features/run-ads/run-ads.component').then((m) => m.RunAdsComponent),
+      },
+      {
         path: 'quota',
         loadComponent: () => import('./features/quota/components/quota.component').then((m) => m.QuotaComponent),
       },

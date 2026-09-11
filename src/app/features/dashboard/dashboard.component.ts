@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { DashboardService } from './dashboard.service';
 import { DashboardSummary, DigitalUser, DigitalUserSummary } from '../../core/models/domain.model';
@@ -30,6 +30,21 @@ export class DashboardComponent {
   readonly digitalUserCount = signal<number>(0);
 
   readonly digitalUsers = signal<DigitalUser[]>([]);
+
+  readonly dailySignups = computed(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const counts = new Array(daysInMonth).fill(0);
+    for (const user of this.digitalUsers()) {
+      const created = new Date(user.createdAt);
+      if (created.getFullYear() === year && created.getMonth() === month) {
+        counts[created.getDate() - 1]++;
+      }
+    }
+    return counts;
+  });
 
   constructor() {
     this.load();
