@@ -1,0 +1,39 @@
+<section class="ad-detail">
+  <a class="back-link" routerLink="/admin/run-ads">← All businesses</a>
+  @if (loading()) { <div class="card"><app-skeleton [height]="280" /></div> }
+  @else if (user(); as profile) {
+    <div class="phead"><div><span class="eyebrow">Advertising workspace</span><h1>{{ businessName(profile) }}</h1><p>{{ profile.name }} · {{ location(profile) }} · ready to advertise</p></div><button class="btn btn-gold" type="button" (click)="createCampaign()">+ Create campaign</button></div>
+    <div class="campaign-grid">
+      <article class="campaign-card hero-card"><span class="tag tag-ok">Campaign ready</span><h2>Start with a focused local campaign</h2><p>Build an audience around {{ location(profile) }} and turn your best business story into a high-intent ad.</p><div class="stat-row"><div><b>Local</b><span>Audience radius</span></div><div><b>3 steps</b><span>To publish</span></div><div><b>Active</b><span>Ad account</span></div></div></article>
+      <article class="campaign-card"><span class="card-label">Business profile</span><h3>{{ profile.name }}</h3><p>{{ profile.email }}</p><p>{{ profile.mobileNumber }}</p><hr /><span class="card-label">Recommended objective</span><strong>Get more customer enquiries</strong></article>
+      <article class="campaign-card"><span class="card-label">Launch checklist</span><ul><li><i>✓</i> Business profile verified</li><li><i>✓</i> Location selected</li><li><i>✓</i> Audience suggestion ready</li></ul></article>
+    </div>
+    <section class="generated-section">
+      <div class="section-heading"><div><span class="eyebrow">Generated advertising content</span><h2>Campaign creatives</h2><p>Meta and Google ad creatives pulled from the user’s generated-content library.</p></div><span class="asset-count">{{ adContent().length }} assets</span></div>
+      @if (contentLoading()) { <div class="card"><app-skeleton [height]="180" /></div> }
+      @else if (contentError()) { <div class="content-state">{{ contentError() }}</div> }
+      @else if (!adContent().length) { <div class="content-state">No Meta or Google ad content is available for this user yet.</div> }
+      @else { <div class="creative-grid">
+        @for (item of adContent(); track item.id) {
+          <article class="creative-card">
+            @if (item.mediaUrl) {
+              <div class="creative-media">
+                @if (isVideo(item)) { <video [src]="item.mediaUrl" controls preload="metadata"></video> }
+                @else { <img [src]="item.mediaUrl" [alt]="title(item)" loading="lazy" /> }
+              </div>
+            }
+            <div class="creative-top"><div><span class="platform-pill">{{ item.platform.replace('_', ' ') }}</span><span class="type-label">{{ item.contentType || item.activityType }}</span></div><span class="status-pill">{{ displayStatus(item) }}</span></div>
+            <h3>{{ title(item) }}</h3>
+            <div class="creative-facts"><span>{{ scheduledFor(item) }}</span><span>{{ item.aiResponse?.activity?.time || 'Generated' }}</span>@if (isMetaReady(item)) { <span class="meta-ready">Meta ready</span> }</div>
+            @if (payload(item).description) { <p class="description">{{ payload(item).description }}</p> }
+            @if (payload(item).caption) { <div class="content-block"><b>Caption</b><p>{{ payload(item).caption }}</p></div> }
+            @if (payload(item).callToAction) { <div class="content-block cta"><b>Call to action</b><p>{{ payload(item).callToAction }}</p></div> }
+            @if (payload(item).script) { <details><summary>View video script</summary><pre>{{ payload(item).script }}</pre></details> }
+            @if (payload(item).hashtags?.length) { <div class="hashtags">@for (tag of payload(item).hashtags; track tag) { <span>{{ tag }}</span> }</div> }
+            <button class="btn btn-gold run-btn" type="button" (click)="runAd(item)">▶ Run</button>
+          </article>
+        }
+      </div> }
+    </section>
+  } @else { <div class="card not-found"><h2>Business not found</h2><p>This advertising workspace is unavailable.</p><a class="btn" routerLink="/admin/run-ads">Return to Run Ads</a></div> }
+</section>

@@ -28,15 +28,18 @@ export class AdminLayoutComponent {
         ],
       },
       {
+        label: 'Commercial',
+        items: [
+          { path: '/admin/run-ads', icon: '◉', label: 'Run Ads' },
+          { path: '/admin/usage', icon: '₹', label: 'Usage & margin' },
+        ],
+      },
+      {
         label: 'Operations',
         items: [
           // { path: '/admin/jobs', icon: '≡', label: 'Job queue' },
           { path: '/admin/quota', icon: '◫', label: 'API quota' },
         ],
-      },
-      {
-        label: 'Commercial',
-        items: [{ path: '/admin/usage', icon: '₹', label: 'Usage & margin' }],
       },
       ...(isSuperAdmin
         ? [

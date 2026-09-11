@@ -18,7 +18,7 @@
 
   <div class="grid grid-2">
     <app-attention-panel [summary]="s" (openIncidents)="goToIncidents()" />
-    <app-margin-by-tenant [entries]="s.marginByTenant" />
+    <app-margin-by-tenant [dailySignups]="dailySignups()" />
   </div>
 }
 
