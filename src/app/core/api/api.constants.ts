@@ -29,6 +29,7 @@ export const API_ENDPOINTS = {
   },
   generatedContent: {
     byUser: (id: string) => `/create-content/getGeneratedContent/${id}`,
+    boost: '/create-content/boostContent',
   },
   incidents: {
     root: '/incidents/getAllIncidents',

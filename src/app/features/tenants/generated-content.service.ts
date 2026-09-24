@@ -23,6 +23,7 @@ export interface GeneratedContentItem {
   active: boolean;
   createdAt: string;
   updatedAt: string;
+  businessData?: { city?: string; district?: string; state?: string; businessName?: string } | null;
   aiResponse?: {
     activity?: { date?: string; time?: string; title?: string; platform?: string; activity?: string };
     response?: GeneratedContentPayload;
@@ -42,6 +43,19 @@ export interface GeneratedContentPayload {
   selectedProduct?: { productName?: string; brand?: string; price?: number; sku?: string } | null;
 }
 
+export interface BoostContentRequest {
+  userId: string;
+  generatedContentId: string;
+  dailyBudget: number;
+  durationDays: number;
+  objective: string;
+  countries: string[];
+  cities: string[];
+  ageMin: number;
+  ageMax: number;
+  autoActivate: boolean;
+}
+
 interface GeneratedContentResponse {
   userId: string;
   total: number;
@@ -56,5 +70,9 @@ export class GeneratedContentService {
     return this.http
       .get<GeneratedContentResponse>(`${environment.apiBaseUrl}${API_ENDPOINTS.generatedContent.byUser(userId)}`)
       .pipe(map((response) => response.data));
+  }
+
+  boost(request: BoostContentRequest): Observable<unknown> {
+    return this.http.post(`${environment.apiBaseUrl}${API_ENDPOINTS.generatedContent.boost}`, request);
   }
 }

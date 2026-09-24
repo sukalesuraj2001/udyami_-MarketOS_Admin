@@ -5,8 +5,9 @@ import { TenantsService } from '../tenants/tenants.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { SkeletonComponent } from '../../shared/components/skeleton/skeleton.component';
 import { GeneratedContentItem, GeneratedContentPayload, GeneratedContentService } from '../tenants/generated-content.service';
+import { BoostAdDialogComponent } from './boost-ad-dialog.component';
 
-@Component({ selector: 'app-run-ads-detail', standalone: true, imports: [RouterLink, SkeletonComponent], templateUrl: './run-ads-detail.component.html', styleUrl: './run-ads-detail.component.scss' })
+@Component({ selector: 'app-run-ads-detail', standalone: true, imports: [RouterLink, SkeletonComponent, BoostAdDialogComponent], templateUrl: './run-ads-detail.component.html', styleUrl: './run-ads-detail.component.scss' })
 export class RunAdsDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly tenantsService = inject(TenantsService);
@@ -14,7 +15,8 @@ export class RunAdsDetailComponent {
   private readonly notifications = inject(NotificationService);
   readonly user = signal<DigitalUser | null>(null);
   readonly generatedContent = signal<GeneratedContentItem[]>([]);
-  readonly adContent = computed(() => this.generatedContent().filter((item) => /^(meta|google)_ads$/i.test(item.platform)));
+  readonly adContent = computed(() => this.generatedContent().filter((item) => /facebook|meta/i.test(item.platform) && !!this.imageUrl(item)));
+  readonly boostTarget = signal<GeneratedContentItem | null>(null);
   readonly loading = signal(true);
   readonly contentLoading = signal(true);
   readonly contentError = signal<string | null>(null);
@@ -35,7 +37,9 @@ export class RunAdsDetailComponent {
   businessName(user: DigitalUser): string { return user.profile?.businessDetails?.businessName || user.profile?.selectedBusinessVertical || 'Independent business'; }
   location(user: DigitalUser): string { return user.businessLocation || user.officeLocation || user.profile?.cityOfResidence || user.profile?.district || 'Not set'; }
   createCampaign(): void { this.notifications.success('Campaign workspace opened', 'Choose your objective and creative to begin this campaign.'); }
-  runAd(item: GeneratedContentItem): void { this.notifications.success('Ad queued to run', `${this.title(item)} will be launched on ${item.platform.replace('_', ' ')}.`); }
+  runAd(item: GeneratedContentItem): void { this.boostTarget.set(item); }
+  defaultCities(item: GeneratedContentItem): string[] { return [...new Set([item.businessData?.city, item.businessData?.district].filter((city): city is string => !!city))]; }
+  imageUrl(item: GeneratedContentItem): string | null { return item.mediaUrl && !this.isVideo(item) ? item.mediaUrl : null; }
   payload(item: GeneratedContentItem): GeneratedContentPayload {
     if (typeof item.generatedContent === 'object') return item.generatedContent as unknown as GeneratedContentPayload;
     try { return JSON.parse(item.generatedContent || '{}') as GeneratedContentPayload; }
