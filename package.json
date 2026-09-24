@@ -1,7 +1,7 @@
 {
   "name": "marketos-admin",
   "version": "0.0.0",
-   "scripts": {
+  "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "format": "prettier --write \"src/**/*.{ts,html,scss}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss}\"",
-    "serve:prod": "http-server dist/marketos-admin/browser -p 3000 -a 0.0.0.0 --proxy http://localhost:3000? --gzip --brotli -c-1",
+    "serve:prod": "http-server dist/marketos-admin/browser -p 3009 -a 0.0.0.0 --proxy http://localhost:3009? --gzip --brotli -c-1",
     "deploy": "pnpm build && pnpm serve:prod"
   },
   "prettier": {
